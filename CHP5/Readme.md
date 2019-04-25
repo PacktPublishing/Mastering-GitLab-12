@@ -43,7 +43,7 @@ wget http://www.catb.org/~esr/cvs-fast-export/cvs-fast-export-{$version}.tar.gz
 Copy and move to usable location
 ```
 make cvs-fast-export
-p cvs-fast-export /usr/local/bin; chmod +x /usr/local/bin/cvs-fast-export
+cvs-fast-export /usr/local/bin; chmod +x /usr/local/bin/cvs-fast-export
 ``` 
 
 Import data into a empty git repository
@@ -52,8 +52,8 @@ cat {$exportfile} |git fast-import
 ``` 
 
 Converting data using cvs2git
-```  
-./cvs2git --blobfile=/tmp/git-blob.dat --dumpfile=/tmp/git-dump.dat "--username=Firstname Lastname" ~/cvsroot
+``` 
+cvs2git --blobfile=/tmp/git-blob.dat --dumpfile=/tmp/git-dump.dat "--username=Firstname Lastname" ~/cvsroot
 ```  
 
 Import the blob file
