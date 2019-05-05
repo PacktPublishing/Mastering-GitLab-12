@@ -1,0 +1,9 @@
+<table class='table table-hover table-striped'>
+  <% @attendees.each do |key,value|%>
+    <tr>
+      <th><%= @attendees[key]['name'] %></th>
+      <td>Aanwezig:</td>
+      <td><%=@attendees[key]['attending'] %></td>
+    </tr>
+<% end %>
+</table>

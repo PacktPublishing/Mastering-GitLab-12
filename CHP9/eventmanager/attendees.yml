@@ -1,0 +1,17 @@
+---
+attendees:
+  1:
+    attending: ''
+    email: someone@joustie.nl
+    guid: 33dfba3a-e7d2-4fab-8f29-d62f93e0817c
+    name: Someone
+  10:
+    attending: 'NO'
+    email: anotherone@joustie.nl
+    guid: 1070d08f-c5ea-4247-95b1-ee7a3ca4a342
+    name: Anotherone
+  11:
+    attending: 'NO'
+    email: organiser@joustie.nl
+    guid: c7d49f48-2f05-468d-9d2e-9609e8311f3c
+    name: Organiser

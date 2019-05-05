@@ -1,0 +1,41 @@
+variables:
+  S3_BUCKET_NAME: "elasticbeanstalk-eu-west-1-513361393569"
+  REGION: "eu-west-1"
+  APPNAME: "eventmanager"
+
+test:
+  image: ruby:latest
+  stage: test
+  script: "bundle install;rspec"
+
+deploy_staging:
+  stage: deploy
+  script:
+    - echo "Deploy to staging server.."
+  image: ruby:latest
+  environment:
+    name: staging
+    url: http://staging.gbnfcg9st9.eu-west-1.elasticbeanstalk.com
+  script:
+   - echo "Deploying to staging"
+   - gem install dpl
+   - dpl --provider=elasticbeanstalk --access-key-id=$AWS_ACCESS_KEY_ID --secret-access-key=$AWS_SECRET_ACCESS_KEY --app=$APPNAME --env=$CI_ENVIRONMENT_NAME --region=$REGION --bucket_name=$S3_BUCKET_NAME
+
+deploy_documentation:
+  stage: deploy
+  variables:
+    ENVIRONMENT: staging
+  trigger: marketing/eventmanager-documentation
+
+deploy to production:
+  stage: deploy
+  environment: 
+    name: production
+    url: http://production.gbnfcg9st9.eu-west-1.elasticbeanstalk.com 
+  when: manual
+  image: ruby:latest
+  script:
+   - echo "Deploying to production"
+   - gem install dpl
+   - dpl --provider=elasticbeanstalk --access-key-id=$AWS_ACCESS_KEY_ID --secret-access-key=$AWS_SECRET_ACCESS_KEY --app=$APPNAME --env=$CI_ENVIRONMENT_NAME --region=$REGION --bucket_name=$S3_BUCKET_NAME
+
