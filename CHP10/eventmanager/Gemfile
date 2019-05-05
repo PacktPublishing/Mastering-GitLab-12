@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+gem "sinatra"
+gem "mail"
+gem "safe_yaml"
+gem "net"
+gem 'rack-test'
+gem "rspec"
