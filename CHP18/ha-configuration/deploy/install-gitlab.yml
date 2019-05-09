@@ -1,0 +1,166 @@
+---
+- name : Configure front end application servers
+  hosts: web
+  become: yes
+  serial: 1
+  become_user: root
+  vars:
+    proxy_env:
+      http_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+      https_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+      ftp_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+  environment: "{{ proxy_env }} "
+  tasks :
+    - name: Install Aptitude
+      apt:
+        update_cache: yes
+        name: aptitude
+
+    - name: Full update Ubuntu
+      apt:
+        update_cache: yes
+        upgrade: full
+      register: task_result
+
+    - name: Install list of packages
+      apt: name={{item}} state=installed
+      with_items:
+        - curl
+        - openssh-server
+        - ca-certificates
+        - postfix
+
+    - name: Install nfs common packages
+      apt: name=nfs-common state=installed update_cache=yes
+
+    - name: (reboot) Reboot triggered
+      command: /sbin/shutdown -r +1 "Ansible-triggered Reboot"
+      async: 0
+      poll: 0
+      when: task_result is changed
+ 
+    - name: Wait for the reboot to complete if there was a change.
+      wait_for_connection:
+        connect_timeout: 30
+        sleep: 60
+        delay: 120
+      when: task_result is changed
+
+    - name: temp fix for nfs starting order of services
+      shell: "systemctl add-wants multi-user.target rpcbind.service"
+  
+    - name: Create mountable dir
+      file: path=/nfs state=directory mode=777 owner=root group=root
+
+    - name: set mountpoints
+      mount: "name=/nfs src={{ hostvars[groups['nfs'][0]]['inventory_hostname'] }}:/nfs fstype=nfs4 opts=defaults,soft,rsize=1048576,wsize=1048576,noatime,nofail,lookupcache=positive dump=0 passno=2 state=mounted"
+
+    - name: Creates main gitlab config dir
+      file:
+        path: "/etc/gitlab"
+        state: directory
+
+    - name: Creates main gitlab mouint point dir
+      file:
+        path: "/var/opt/gitlab"
+        state: directory
+
+    - name: Creates main gitlab mount points
+      file:
+        path: "/var/opt/gitlab/{{ item }}"
+        state: directory
+      with_items:
+        - git-data
+        - .ssh
+        - gitlab-rails
+        - gitlab-ci
+        - gitlab-rails/uploads
+        - gitlab-rails/shared
+        - gitlab-ci/builds
+    
+    - name: Bindmounting gitlab git-data and .ssh dirs
+      mount:
+        name: "/var/opt/gitlab/{{ item }}"
+        src: "/nfs/{{ item }}"
+        opts: bind
+        fstype: none
+        state: present
+      register: fstab
+      with_items:
+      - .ssh
+      - git-data
+   
+    - name: Bindmounting gitlab upload and shared dirs
+      mount:
+        name: "/var/opt/gitlab/gitlab-rails/{{ item }}"
+        src: "/nfs/{{ item }}"
+        opts: bind
+        fstype: none
+        state: present
+      register: fstab
+      with_items:
+      - uploads
+      - shared
+   
+    - name: Bindmounting gitlab builds dir
+      mount:
+        name: "/var/opt/gitlab/gitlab-ci/builds"
+        src: "/nfs/builds"
+        opts: bind
+        fstype: none
+        state: present
+      register: fstab
+     
+    - name: Reload fstab
+      command: mount -a
+      when: fstab.changed
+
+    - name: Add gitlab pkg repo
+      shell: 'curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | bash'
+      
+    - name: Creates gitlab config directory
+      file:
+        path: /etc/gitlab
+        state: directory
+        owner: root
+        group: root
+        mode: 0600
+      
+    - name: Place GitLab omnibus configuration file
+      template:
+        src: gitlab.rb.j2
+        dest: /etc/gitlab/gitlab.rb
+        owner: root
+        group: root
+        mode: 0600
+
+    - name: Install gitlab omnibus
+      apt: name={{item}} state=installed
+      with_items:
+        - gitlab-ee
+      
+    - name: Active changes
+      shell: "gitlab-ctl reconfigure"
+  
+    - name: Transfer generated secrets from first appserver
+      fetch:
+        src: /etc/gitlab/gitlab-secrets.json
+        dest: /tmp/
+        flat: yes
+      when: hostvars[inventory_hostname].role == "master"
+    
+    - name: Transfer generated secrets from first appserver
+      copy:
+        src: /tmp/gitlab-secrets.json
+        dest: /etc/gitlab/gitlab-secrets.json
+        owner: root
+        group: root
+        mode: 0600
+      when: hostvars[inventory_hostname].role == "slave"
+
+    - name: Disable automigrations
+      shell: touch /etc/gitlab/skip-auto-reconfigure
+       
+    - name: Restart services
+      shell: "gitlab-ctl restart"
+      

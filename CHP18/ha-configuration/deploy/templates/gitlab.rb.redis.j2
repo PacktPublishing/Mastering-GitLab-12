@@ -1,0 +1,34 @@
+## Enable Redis
+redis['enable'] = true
+
+## Disable all other services
+sidekiq['enable'] = false
+gitlab_workhorse['enable'] = false
+unicorn['enable'] = false
+postgresql['enable'] = false
+nginx['enable'] = false
+prometheus['enable'] = false
+alertmanager['enable'] = false
+pgbouncer_exporter['enable'] = false
+gitlab_monitor['enable'] = false
+gitaly['enable'] = false
+
+# Check the role of the redis server
+{% if hostvars[inventory_hostname].role == "master"   %}
+roles ['redis_master_role']
+{% else %}
+roles ['redis_slave_role']
+redis['master_ip'] = '{{ hostvars[groups['redis'][1]]['ansible_eth0']['ipv4']['address'] }}'
+{% endif %}   
+ 
+redis['bind'] = '0.0.0.0'
+
+# Define a port so Redis can listen for TCP requests which will allow other
+# machines to connect to it.
+redis['port'] = 6379
+
+# Set up password authentication for Redis (use the same password in all nodes).
+redis['password'] = 'packtpub'
+
+#Don't run database migrations
+gitlab_rails['auto_migrate'] = false

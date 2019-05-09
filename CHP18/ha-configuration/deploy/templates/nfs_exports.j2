@@ -1,0 +1,1 @@
+/nfs           {% for host in groups['web'] %} {{ hostvars[host]['inventory_hostname'] }}(rw,sync,no_root_squash,no_subtree_check)  {% endfor %}
