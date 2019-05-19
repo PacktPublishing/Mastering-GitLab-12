@@ -1,12 +1,12 @@
 variable "region"
 {
-    default = "eu-west-1"
+    default = "eu-central-1"
 }
 
-variable "aws_ubuntu_awis"
+variable "aws_ubuntu_amis"
 {
     default = {
-        "eu-west-1" = "ami-2a7d75c0"
+        "eu-central-1" = "ami-0f041b9708f60ca57"
     }
 }
 

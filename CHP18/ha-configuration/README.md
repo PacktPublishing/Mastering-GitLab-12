@@ -43,7 +43,7 @@ terraform apply --auto-approve
 ``` 
 ## Output the generated private key (please use another location then /tmp if not a demo)
 ``` 
-terraform output  -json|jq .private_key.value -r >/tmp/privkey.pem && chmod 600 /tmp/privkey.pem
+terraform output  -json|jq .mykey.value -r >/tmp/mykey.pem && chmod 600 /tmp/mykey.pem
 ``` 
 ## Provision the Bastion hosts
 ``` 

@@ -37,9 +37,9 @@ function connect_to_host  {
           #If host is a bastion host we use a different connection method 
         if [[ $host_code =~ ^bastion[0-9]+$ ]]
         then
-            screen ssh -o StrictHostKeyChecking=no -i /tmp/privkey.pem ubuntu@$ssh_host -t "echo "PS1=$host_code"$"">>~/.bashrc;bash" 
+            screen ssh -o StrictHostKeyChecking=no -i /tmp/mykey.pem ubuntu@$ssh_host -t "echo "PS1=$host_code"$"">>~/.bashrc;bash" 
         else
-            screen ssh -i /tmp/privkey.pem ubuntu@"$ssh_host" -o StrictHostKeyChecking=no -o ProxyCommand="ssh -o StrictHostKeyChecking=no -i /tmp/privkey.pem   -W %h:%p -q ubuntu@"${cluster_hosts['bastion1']}"" -t "echo "PS1=$host_code"$"">>~/.bashrc;bash"
+            screen ssh -i /tmp/mykey.pem ubuntu@"$ssh_host" -o StrictHostKeyChecking=no -o ProxyCommand="ssh -o StrictHostKeyChecking=no -i /tmp/mykey.pem   -W %h:%p -q ubuntu@"${cluster_hosts['bastion1']}"" -t "echo "PS1=$host_code"$"">>~/.bashrc;bash"
         fi
     else
 
@@ -47,11 +47,11 @@ function connect_to_host  {
         if [[ $host_code =~ ^bastion[0-9]+$ ]]
         then
 
-            new_window "ssh -o StrictHostKeyChecking=no -i /tmp/privkey.pem ubuntu@$ssh_host -t \"echo \"PS1=$host_code\"$\"\">>~/.bashrc;bash\" "
+            new_window "ssh -o StrictHostKeyChecking=no -i /tmp/mykey.pem ubuntu@$ssh_host -t \"echo \"PS1=$host_code\"$\"\">>~/.bashrc;bash\" "
 
         else
 
-            new_window "ssh -i /tmp/privkey.pem ubuntu@$ssh_host -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ProxyCommand=\"ssh -o StrictHostKeyChecking=no -i /tmp/privkey.pem   -W %h:%p -q ubuntu@${cluster_hosts['bastion1']}\" -t \"echo \"PS1=$\"$host_code\"\">>~/.bashrc;bash\""
+            new_window "ssh -i /tmp/mykey.pem ubuntu@$ssh_host -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ProxyCommand=\"ssh -o StrictHostKeyChecking=no -i /tmp/mykey.pem   -W %h:%p -q ubuntu@${cluster_hosts['bastion1']}\" -t \"echo \"PS1=$\"$host_code\"\">>~/.bashrc;bash\""
 
         fi
 

@@ -43,8 +43,8 @@
 
     - name: copy generated key with owner and permissions
       copy:
-        src: /tmp/privkey.pem
-        dest: /tmp/privkey.pem
+        src: /tmp/mykey.pem
+        dest: /tmp/mykey.pem
         owner: root
         group: root
         mode: 0600

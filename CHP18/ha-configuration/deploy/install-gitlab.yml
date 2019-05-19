@@ -1,6 +1,6 @@
 ---
 - name : Configure front end application servers
-  hosts: web
+  hosts: frontend
   become: yes
   serial: 1
   become_user: root

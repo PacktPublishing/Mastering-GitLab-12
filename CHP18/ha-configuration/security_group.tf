@@ -1,8 +1,8 @@
-resource "aws_security_group" "LoadBalancerSG"
+resource "aws_security_group" "SG-loadbalancer"
 {
-    name = "LoadBalancerSG"
+    name = "SG-loadbalancer"
     vpc_id = "${aws_vpc.gitlabha.id}"
-    description = "Security group for load-balancers"
+    description = "Security group for the load-balancer"
     ingress {
         from_port = 80
         to_port = 80
@@ -22,38 +22,38 @@ resource "aws_security_group" "LoadBalancerSG"
         from_port = 80
         to_port = 80
         protocol = "TCP"
-        security_groups = ["${aws_security_group.WebserverSG.id}"]
+        security_groups = ["${aws_security_group.SG-frontendservers.id}"]
     }
 
     egress {
         from_port = 443
         to_port = 443
         protocol = "TCP"
-        security_groups = ["${aws_security_group.WebserverSG.id}"]
+        security_groups = ["${aws_security_group.SG-frontendservers.id}"]
     }
 
     tags
     {
-        Name = "SG-Loadbalancer"
+        Name = "SG-loadbalancers"
     }
 }
-resource "aws_security_group" "WebserverSG"
+resource "aws_security_group" "SG-frontendservers"
 {
-    name = "WebserverSG"
+    name = "SG-frontendservers"
     vpc_id = "${aws_vpc.gitlabha.id}"
-    description = "Security group for webservers"
+    description = "Security group for frontends ervers"
     ingress {
         from_port = 22
         to_port = 22
         protocol = "TCP"
-        security_groups = ["${aws_security_group.bastionhostSG.id}"]
-        description = "Allow incoming SSH traffic from Bastion Host"
+        security_groups = ["${aws_security_group.SG-bastionhosts.id}"]
+        description = "Allow incoming SSH traffic from bastion hosts"
     }
     ingress {
       from_port = -1
       to_port = -1
       protocol = "ICMP"
-      security_groups = ["${aws_security_group.bastionhostSG.id}"]
+      security_groups = ["${aws_security_group.SG-bastionhosts.id}"]
       description = "Allow incoming ICMP from management IPs"
     }
     ingress {
@@ -72,7 +72,7 @@ resource "aws_security_group" "WebserverSG"
         from_port = 3128
         to_port = 3128
         protocol = "TCP"
-        security_groups = ["${aws_security_group.bastionhostSG.id}"]
+        security_groups = ["${aws_security_group.SG-bastionhosts.id}"]
     }
     egress {
       from_port = 0
@@ -83,12 +83,12 @@ resource "aws_security_group" "WebserverSG"
     }
     tags
     {
-        Name = "SG-WebServer"
+        Name = "SG-frontendservers"
     }
 }
 
-resource "aws_security_group" "bastionhostSG" {
-  name = "BastionHostSG"
+resource "aws_security_group" "SG-bastionhosts" {
+  name = "SG-bastionhosts"
   vpc_id = "${aws_vpc.gitlabha.id}"
   description = "Security group for bastion hosts"
   ingress {
@@ -114,60 +114,60 @@ resource "aws_security_group" "bastionhostSG" {
       description = "Allow all outgoing traffic"
   }
   tags {
-      Name = "SG-Bastionhost"
+      Name = "SG-bastionhosts"
   }
 }
 
 resource "aws_security_group_rule" "lbhttpaccess" {
-    security_group_id = "${aws_security_group.WebserverSG.id}"
+    security_group_id = "${aws_security_group.SG-frontendservers.id}"
     type = "ingress"
     from_port = 80
     to_port = 80
     protocol = "TCP"
-    source_security_group_id = "${aws_security_group.LoadBalancerSG.id}"
+    source_security_group_id = "${aws_security_group.SG-loadbalancer.id}"
     description = "Allow Squid proxy access from loadbalancers"
 }
 
 resource "aws_security_group_rule" "lbhttpsaccess" {
-    security_group_id = "${aws_security_group.WebserverSG.id}"
+    security_group_id = "${aws_security_group.SG-frontendservers.id}"
     type = "ingress"
     from_port = 443
     to_port = 443
     protocol = "TCP"
-    source_security_group_id = "${aws_security_group.LoadBalancerSG.id}"
+    source_security_group_id = "${aws_security_group.SG-loadbalancer.id}"
     description = "Allow Squid proxy access from loadbalancers"
 }
 
 resource "aws_security_group_rule" "webproxyaccess" {
-    security_group_id = "${aws_security_group.bastionhostSG.id}"
+    security_group_id = "${aws_security_group.SG-bastionhosts.id}"
     type = "ingress"
     from_port = 3128
     to_port = 3128
     protocol = "TCP"
-    source_security_group_id = "${aws_security_group.WebserverSG.id}"
-    description = "Allow Squid proxy access from webservers"
+    source_security_group_id = "${aws_security_group.SG-frontendservers.id}"
+    description = "Allow Squid proxy access from frontend servers"
 }
 
 resource "aws_security_group_rule" "dbproxyaccess" {
-    security_group_id = "${aws_security_group.bastionhostSG.id}"
+    security_group_id = "${aws_security_group.SG-bastionhosts.id}"
     type = "ingress"
     from_port = 3128
     to_port = 3128
     protocol = "TCP"
-    source_security_group_id = "${aws_security_group.DBServerSG.id}"
-    description = "Allow Squid proxy access from database servers"
+    source_security_group_id = "${aws_security_group.SG-backendservers.id}"
+    description = "Allow Squid proxy access from backend servers"
 }
 
-resource "aws_security_group" "DBServerSG" {
-    name = "DBServerSG"
+resource "aws_security_group" "SG-backendservers" {
+    name = "SG-backendservers"
     vpc_id = "${aws_vpc.gitlabha.id}"
-    description = "Security group for database servers"
+    description = "Security group for backend servers"
     ingress {
         from_port = 6432
         to_port = 6432
         protocol = "TCP"
-        security_groups = ["${aws_security_group.WebserverSG.id}"]
-        description = "Allow incoming PostgreSQL traffic from webservers"
+        security_groups = ["${aws_security_group.SG-frontendservers.id}"]
+        description = "Allow incoming PostgreSQL traffic from frontend servers"
     }
 
     ingress {
@@ -177,27 +177,19 @@ resource "aws_security_group" "DBServerSG" {
        self = true
     }
 
-    # ingress {
-    #     from_port = 5432
-    #     to_port = 5432
-    #     protocol = "TCP"
-    #     security_groups = ["${aws_security_group.bastionhostSG.id}"]
-    #     description = "Allow incoming PostgreSQL traffic from Bastion Host"
-    # }
-
     ingress {
         from_port = 22
         to_port = 22
         protocol = "TCP"
-        security_groups = ["${aws_security_group.bastionhostSG.id}"]
-        description = "Allow incoming SSH traffic from Bastion Host"
+        security_groups = ["${aws_security_group.SG-bastionhosts.id}"]
+        description = "Allow incoming SSH traffic from bastion hosts"
     }
     
     ingress {
         from_port = -1
         to_port = -1
         protocol = "ICMP"
-        security_groups = ["${aws_security_group.bastionhostSG.id}"]
+        security_groups = ["${aws_security_group.SG-bastionhosts.id}"]
         description = "Allow incoming ICMP from management IPs"
     }
 
@@ -212,10 +204,10 @@ resource "aws_security_group" "DBServerSG" {
         from_port = 3128
         to_port = 3128
         protocol = "TCP"
-        security_groups = ["${aws_security_group.bastionhostSG.id}"]
+        security_groups = ["${aws_security_group.SG-bastionhosts.id}"]
     }
     tags
     {
-        Name = "SG-DBServer"
+        Name = "SG-backendservers"
     }
 }
