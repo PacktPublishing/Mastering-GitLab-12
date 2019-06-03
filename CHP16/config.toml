@@ -1,0 +1,42 @@
+listen_address = ":9252"
+concurrent = 4
+check_interval = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "packtpubrunner"
+  limit = 6
+  url = "https://gitlab-ee.joustie.nl"
+  token = "xxxx"
+  executor = "docker+machine"
+  [runners.docker]
+    tls_verify = false
+    image = "alpine"
+    privileged = true
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    shm_size = 0
+  [runners.cache]
+    Type = "s3"
+    Shared = true
+    [runners.cache.s3]
+      ServerAddress = "<ip-address of your minio server or AWS bucket>:9005"
+      AccessKey = "xxx"
+      SecretKey = "xxxx+ZWop1Ip56eQWUxAnm"
+      BucketName = "joustie-gitlab-runner-cache"
+      Insecure = true
+    [runners.cache.gcs]
+  [runners.machine]
+    IdleCount = 2
+    IdleTime = 100
+    MaxBuilds = 5
+    MachineDriver = "virtualbox"
+    MachineName = "elastic-runner-%s"
+    MachineOptions = ["engine-registry-mirror=http://82.161.132.205:6000"]
+    OffPeakPeriods = ["* * 0-9,18-23 * * mon-fri *", "* * * * * sat,sun *"]
+    OffPeakTimezone = ""
+    OffPeakIdleCount = 1
+    OffPeakIdleTime = 60
