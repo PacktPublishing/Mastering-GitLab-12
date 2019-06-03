@@ -1,3 +1,6 @@
+# Files in this directory:
+Readme.md - this file
+
 # Commands used in Chapter 6
 
 ## Install git-lfs
