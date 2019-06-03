@@ -1,0 +1,15 @@
+web:
+ image: 'gitlab/gitlab-ce:latest'
+ restart: always
+ hostname: 'gitlab.joustie.nl'
+ environment:
+ GITLAB_OMNIBUS_CONFIG: |
+ external_url 'https://gitlab.joustie.nl'
+ ports:
+ - '80:8080'
+ - '443:4443'
+ - '22:2222'
+ volumes:
+ - '/srv/gitlab/config:/etc/gitlab'
+ - '/srv/gitlab/logs:/var/log/gitlab'
+ - '/srv/gitlab/data:/var/opt/gitlab'
