@@ -1,0 +1,13 @@
+dast:
+ image: registry.gitlab.com/gitlab-org/security-products/zaproxy
+ variables:
+ website: "https://blog.joustie.nl"
+ allow_failure: true
+ script:
+ - mkdir /zap/wrk/
+ - /zap/zap-baseline.py -J gl-dast-report.json -t $website || true
+ - cp /zap/wrk/gl-dast-report.json .
+ artifacts:
+ reports:
+ dast: gl-dast-report.json
+ 

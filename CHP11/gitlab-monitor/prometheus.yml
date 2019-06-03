@@ -1,0 +1,11 @@
+ - job_name: 'git-metrics'
+ params:
+ token: [ gitlab_health_check_access_token ]
+ metrics_path: /-/metrics
+ scrape_interval: 5s
+ scheme: https
+ tls_config:
+ insecure_skip_verify: true
+ file_sd_configs:
+ - files:
+ - /etc/prometheus/sd/gitlab_metrics_exporter_sd.yml

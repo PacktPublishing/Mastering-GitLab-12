@@ -1,13 +1,30 @@
-# What is this?
+Files in this directory:
 
-This program is a sample script of a prometheus exporter written in Python using the Python prometheus client.
+``` 
+.
+├── DAST
+│   └── .gitlab-ci.yml    #Config file to run a Dynamic Application Security test in your project
+├── README.md
+├── SAST
+│   └── .gitlab-ci.yml    #Config file to run a Static Application Security test in your project
+├── dependency-scanning
+│   └── .gitlab-ci.yml    #Config file to run a dependency test in your project
+├── gitlab-monitor          Two files to enable Prometheus to scape the GitLab Monitor exorter
+│   ├── gitlab_metrics_exporter_sd.yml 
+│   └── prometheus.yml
+└── python-exporter       
+    ├── prometheus.yml     #Prometheus configuration which scrapes port 8000
+    └── sample_exporter.py  #Sample Python exporter which exposes metrics on port 8000 when run
+``` 
 
-# Technical requirements
 
-* Python
+# Commands used in chapter 11
 
-* prometheus_client
-Install with pip install prometheus_client
-
-# Running the example
-python sample_exporter.py 
+## Starting a prometheus Docker Container
+``` 
+ docker run -it --name my-prometheus \
+ -v /tmp:/etc/prometheus \
+ --publish 9090:9090 \
+ prom/prometheus
+ ``` 
+ 
