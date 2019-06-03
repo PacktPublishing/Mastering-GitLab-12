@@ -1,0 +1,18 @@
+global:
+   # The smarthost and SMTP sender used for mail notifications.
+   smtp_smarthost: 'smtp.xs4all.nl:25'
+   smtp_from: 'alertmanager@joustie.nl'
+ 
+ route:
+   repeat_interval: 3h
+   receiver: joustie
+ 
+ routes:
+   - match_re:
+       service: ^(.*)$
+     receiver: joustie
+ 
+ receivers:
+ - name: 'joustie'
+   email_configs:
+   - to: 'joustie@somewhere.com'

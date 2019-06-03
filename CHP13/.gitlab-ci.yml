@@ -1,0 +1,4 @@
+job1:
+ script: "execute-this-script-for-job1"
+job2:
+ script: "execute-this-script-for-job2"

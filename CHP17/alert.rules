@@ -1,0 +1,10 @@
+groups:
+ - name: joberror
+   rules:
+   - alert: HighErrorRate
+     expr: gitlab_runner_failed_jobs_total > 2
+     for: 1m
+     labels:
+       severity: email
+     annotations:
+       summary: High job errors

@@ -1,67 +1,43 @@
-# Commands used in Chapter 1
 
-Files in this directory:
-Readme.md - this file
-nginx.config - a sample configuration file for NGINX
+# Files in this directory:
+Readme.md - this file 
 
+config.toml- a sample configuration file for a GitLab Runner with monitoring enabled
 
-# Installing NGINX on apt-based distros like Debian and Ubuntu
-sudo apt-get update
-sudo apt-get install nginx
+# Commands used in Chapter 17
 
-# Using Homebrew on macOS
-brew install nginx
+## Restart GitLab Runner with the Homebrew package manager for macOS
+``` 
+brew services  restart  gitlab-runner
+```
 
-# Run nginx config
-nginx -c /path/to/nginx.config
+## Restart GitLab Runner on other Unix platform
+``` 
+sudo killall -SIGHUP gitlab-runner
+``` 
 
-# Installing Unicorn
+## Start Prometheus container
+``` 
+docker run -p 9090:9090 -v ~/srv/prometheus:/etc/prometheus prom/prometheus
+``` 
 
-gem install rails
+## Start Alertmanager container
+``` 
+docker run  -dp 9093:9093 --name=prom_alertmanager -v ~/srv/prometheus/alertmanager.yml:/alertmanager.yml prom/alertmanager --config.file=/alertmanager.yml
+``` 
 
-gem install unicorn
+## Stop Prometheus container
+``` 
+docker stop prom_server
+``` 
 
-# Install new rails app
-mkdir /usr/local/www
-chmod 755 /usr/local/www
-cd /usr/local/www
-rails new gitlab-app
+## Remove Prometheus container
+``` 
+docker rm prom_server
+``` 
 
-# Download a unicorn default config
-cd gitlab-app/config
-wget https://raw.github.com/defunkt/unicorn/master/examples/unicorn.conf.rb
-
-# Change the path to the socket in the config file
-listen app_path + '/tmp/sockets/unicorn.sock', backlog: 64
-
-# Start Unicorn
-unicorn -c config/unicorn.rb
-
-# Debug the Unicorn socket
-ruby unicorn_status.rb /var/opt/gitlab/gitlab-rails/sockets/gitlab.socket 10
-
-# Redis
-
-# Install Redis on macOS
-brew install redis
-
-# Install on Linux 
-apt-get install redis
-or
-yum install redis
-
-# Start Redis
-brew services start redis
-or 
-redis-server
-
-# Test a Redis instance
-redis-cli ping
-
-
-
-
-
-
-
+## Start Prometheus container with Alertmanager enabled
+``` 
+docker run  -dp 9090:9090 --name=prom_server -v /Users/joostevertse/srv/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml -v ~/srv/prometheus/alert.rules:/etc/prometheus/alert.rules prom/prometheus  --config.file=/etc/prometheus/prometheus.yml
+``` 
 
