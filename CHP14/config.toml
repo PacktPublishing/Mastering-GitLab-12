@@ -1,0 +1,10 @@
+concurrent = 1
+ check_interval = 0
+ 
+ [[runners]]
+   name = "runnerhost.joustie.nl"
+   url = "https://gitlab-ee.joustie.nl"
+   token = "xxxxx"
+   executor = "shell"
+   shell = "bash"
+   [runners.cache]
