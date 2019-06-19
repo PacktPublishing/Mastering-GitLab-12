@@ -4,15 +4,15 @@
 # This only works on Mac currently!
 
 # Source the code that generates seperate terminal windows
-. new_window.sh
+. scripts/new_window.sh
 
 # Define the hosts
 declare -A cluster_hosts
 
 cluster_hosts=( ["bastion1"]=`/usr/local/bin/terraform.py| jq '.security.hosts[0]'` \
 ["bastion2"]=`/usr/local/bin/terraform.py| jq '.security.hosts[1]'` \
-["web0"]=`/usr/local/bin/terraform.py| jq '.web.hosts[0]'` \
-["web1"]=`/usr/local/bin/terraform.py| jq '.web.hosts[1]'` \
+["frontend0"]=`/usr/local/bin/terraform.py| jq '.frontend.hosts[0]'` \
+["frontend1"]=`/usr/local/bin/terraform.py| jq '.frontend.hosts[1]'` \
 ["red0"]=`/usr/local/bin/terraform.py| jq '.redis.hosts[0]'` \
 ["red1"]=`/usr/local/bin/terraform.py| jq '.redis.hosts[1]'` \
 ["db0"]=`/usr/local/bin/terraform.py| jq '.db.hosts[0]'` \

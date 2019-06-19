@@ -28,7 +28,7 @@ postgresql['max_wal_senders'] = 4
 
 # Create a whitelist
 postgresql['trust_auth_cidr_addresses'] = %w({{ hostvars[groups['db'][0]]['subnet'] }} {{ hostvars[groups['db'][1]]['subnet'] }} {{ hostvars[groups['db'][2]]['subnet'] }})
-postgresql['md5_auth_cidr_addresses'] =  %w({{ hostvars[groups['web'][0]]['inventory_hostname'] }} {{ hostvars[groups['web'][1]]['inventory_hostname'] }})
+postgresql['md5_auth_cidr_addresses'] =  %w({{ hostvars[groups['frontend'][0]]['inventory_hostname'] }} {{ hostvars[groups['frontend'][1]]['inventory_hostname'] }})
 repmgr['trust_auth_cidr_addresses'] = %w({{ hostvars[groups['db'][0]]['subnet'] }} {{ hostvars[groups['db'][1]]['subnet'] }} {{ hostvars[groups['db'][2]]['subnet'] }})
 
 # Configure the consul agent

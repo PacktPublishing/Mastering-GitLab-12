@@ -11,16 +11,16 @@
       ftp_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
   environment: "{{ proxy_env }} "
   tasks :
-    - name: Install Aptitude
-      apt:
-        name: aptitude
+    # - name: Install Aptitude
+    #   apt:
+    #     name: aptitude
 
-    - name: Full update Ubuntu
-      apt:
-        upgrade: full
-        update_cache: yes
-        cache_valid_time: 86400 #One day
-      register: task_result
+    # - name: Full update Ubuntu
+    #   apt:
+    #     upgrade: full
+    #     update_cache: yes
+    #     cache_valid_time: 86400 #One day
+    #   register: task_result
 
     - name: Install nfs common packages
       apt: name=nfs-common state=installed update_cache=yes
@@ -31,18 +31,18 @@
     - name: Install nfs server packages
       apt: name=nfs-kernel-server state=installed update_cache=yes
 
-    - name: (reboot) Reboot triggered
-      command: /sbin/shutdown -r +1 "Ansible-triggered Reboot"
-      async: 0
-      poll: 0
-      when: task_result is changed
+    # - name: (reboot) Reboot triggered
+    #   command: /sbin/shutdown -r +1 "Ansible-triggered Reboot"
+    #   async: 0
+    #   poll: 0
+    #   when: task_result is changed
  
-    - name: Wait for the reboot to complete if there was a change.
-      wait_for_connection:
-        connect_timeout: 30
-        sleep: 60
-        delay: 120
-      when: task_result is changed
+    # - name: Wait for the reboot to complete if there was a change.
+    #   wait_for_connection:
+    #     connect_timeout: 30
+    #     sleep: 60
+    #     delay: 120
+    #   when: task_result is changed
 
     - name: Creates nfs export directory
       file:

@@ -1,0 +1,30 @@
+# /etc/gitlab/gitlab.rb
+
+# Avoid running unnecessary services on the Gitaly server
+postgresql['enable'] = false
+redis['enable'] = false
+nginx['enable'] = false
+prometheus['enable'] = false
+unicorn['enable'] = false
+sidekiq['enable'] = false
+gitlab_workhorse['enable'] = false
+
+# Prevent database connections during 'gitlab-ctl reconfigure'
+gitlab_rails['rake_cache_clear'] = false
+gitlab_rails['auto_migrate'] = false
+
+# Configure the gitlab-shell API callback URL. Without this, `git push` will
+# fail. This can be your 'front door' GitLab URL or an internal load
+# balancer.
+gitlab_rails['internal_api_url'] = "http://{{ hostvars[groups['frontend'][0]]['inventory_hostname'] }}:8080"
+
+# Make Gitaly accept connections on all network interfaces. You must use
+# firewalls to restrict access to this address/port.
+gitaly['listen_addr'] = "0.0.0.0:8075"
+gitaly['auth_token'] = 'abc123secret'
+
+gitaly['storage'] = [
+  { 'name' => 'default', 'path' => '/mnt/gitlab/default/repositories' },
+  { 'name' => 'storage1', 'path' => '/mnt/gitlab/storage1/repositories' },
+]
+ 

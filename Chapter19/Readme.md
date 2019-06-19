@@ -1,67 +1,48 @@
-# Commands used in Chapter 1
+# Files in this directory:
+Readme.md - this file 
 
-Files in this directory:
-Readme.md - this file
-nginx.config - a sample configuration file for NGINX
+# HA-configuration
 
+In the directory ha-configuration you fill find example project which show jow to create an HA GitLab configuration. More info in the README.md there.
 
-# Installing NGINX on apt-based distros like Debian and Ubuntu
-sudo apt-get update
-sudo apt-get install nginx
-
-# Using Homebrew on macOS
-brew install nginx
-
-# Run nginx config
-nginx -c /path/to/nginx.config
-
-# Installing Unicorn
-
-gem install rails
-
-gem install unicorn
-
-# Install new rails app
-mkdir /usr/local/www
-chmod 755 /usr/local/www
-cd /usr/local/www
-rails new gitlab-app
-
-# Download a unicorn default config
-cd gitlab-app/config
-wget https://raw.github.com/defunkt/unicorn/master/examples/unicorn.conf.rb
-
-# Change the path to the socket in the config file
-listen app_path + '/tmp/sockets/unicorn.sock', backlog: 64
-
-# Start Unicorn
-unicorn -c config/unicorn.rb
-
-# Debug the Unicorn socket
-ruby unicorn_status.rb /var/opt/gitlab/gitlab-rails/sockets/gitlab.socket 10
-
-# Redis
-
-# Install Redis on macOS
-brew install redis
-
-# Install on Linux 
-apt-get install redis
-or
-yum install redis
-
-# Start Redis
-brew services start redis
-or 
-redis-server
-
-# Test a Redis instance
-redis-cli ping
-
-
-
-
-
-
-
-
+``` 
+.
+├── README.md
+├── ansible.cfg
+├── ansible.tf
+├── connect_ssh.sh
+├── create_screenfile.sh
+├── deploy
+│   ├── files
+│   ├── install-backend-services.yml
+│   ├── install-consul.yml
+│   ├── install-frontend-services.yml
+│   ├── install-gitaly.yml
+│   ├── install-pgbouncer.yml
+│   ├── install-postgres-core.yml
+│   ├── install-postgres-slaves.yml
+│   ├── install-redis.yml
+│   ├── install.yml
+│   └── templates
+│       ├── databases.ini.j2
+│       ├── gitlab.rb.backend.j2
+│       ├── gitlab.rb.consul.j2
+│       ├── gitlab.rb.frontend.j2
+│       ├── gitlab.rb.gitaly.j2
+│       ├── gitlab.rb.pgbouncer.j2
+│       ├── gitlab.rb.postgres.j2
+│       ├── gitlab.rb.redis.j2
+│       └── pgpass.j2
+├── deploy-with-ansible.sh
+├── instances.tf
+├── keys.tf
+├── lb.tf
+├── modules
+├── networking.tf
+├── new_window.sh
+├── providers.tf
+├── routes.tf
+├── security.tf
+├── terraform-ha1.xml
+└── variables.tf
+``` 

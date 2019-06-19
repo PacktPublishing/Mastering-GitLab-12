@@ -29,7 +29,7 @@ terraform init
 
 ## Automatic deployment
 ``` 
-./deploy-with-ansible.sh
+scripts/deploy-with-ansible.sh
 ``` 
 
 ## Manual deployment
