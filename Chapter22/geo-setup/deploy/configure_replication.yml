@@ -1,0 +1,71 @@
+- name : Configure Gitlab host
+  hosts: gitlab
+  become: yes
+  become_user: root
+  vars:
+    proxy_env:
+      http_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+      https_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+      ftp_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+  environment: "{{ proxy_env }} "
+  tasks :
+
+      - name: Install pip3
+        apt:
+         name: python3-pip
+         
+      - name: install pexpect
+        pip:
+          name: pexpect
+        become: yes
+
+      - name: Define the node as primary
+        shell: "gitlab-ctl set-geo-primary-node"
+        when : hostvars[inventory_hostname].role == "primary"
+      
+      - name: Generate a MD5 hash for the db user
+        register: db_md5
+        expect:
+          command: "gitlab-ctl pg-password-md5 gitlab"
+          responses:
+            password:
+              - "packtpub"
+              - "packtpub"
+        when : hostvars[inventory_hostname].role == "primary"
+
+      - set_fact:
+          generated_db_pass: "{{ db_md5.stdout_lines[2] }}"
+        when: hostvars[inventory_hostname].role == "primary"
+ 
+      - name: Set gitlab-replicator password
+        expect:
+          command: "gitlab-ctl set-replication-password"
+          responses:
+            password:
+              - "packtpub"
+              - "packtpub"   
+        when : hostvars[inventory_hostname].role == "primary"
+
+      - name: Place GitLab omnibus configuration file
+        template:
+         src: gitlab.rb.replication.j2
+         dest: /etc/gitlab/gitlab.rb
+         owner: root
+         group: root
+         mode: 0600
+        when : hostvars[inventory_hostname].role == "primary"
+
+      - name: Reconfigure gitlab
+        shell: "gitlab-ctl reconfigure"
+        when : hostvars[inventory_hostname].role == "primary"
+
+      - name: Restart postgres
+        shell: "gitlab-ctl restart postgresql"
+        when : hostvars[inventory_hostname].role == "primary"
+
+      - name: Specifying a destination path
+        fetch:
+          src: /var/opt/gitlab/gitlab-psql/data/server.crt
+          dest: db-cert.crt
+          flat: yes
+          when : hostvars[inventory_hostname].role == "primary"

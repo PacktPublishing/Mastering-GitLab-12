@@ -41,7 +41,7 @@ resource "aws_security_group" "SG-frontendservers"
 {
     name = "SG-frontendservers"
     vpc_id = "${aws_vpc.gitlabha.id}"
-    description = "Security group for frontends ervers"
+    description = "Security group for frontendservers"
     ingress {
         from_port = 22
         to_port = 22

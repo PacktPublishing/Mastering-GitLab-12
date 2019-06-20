@@ -4,7 +4,7 @@ resource "aws_subnet" "public-frontend_az-a" {
   map_public_ip_on_launch = true 
   vpc_id = "${aws_vpc.gitlabha.id}" #
   tags {
-      Name = "Subnet-eu-central-1a-Web" 
+      Name = "Subnet-eu-central-1a-Frontend" 
   }
 }
 
@@ -14,7 +14,7 @@ resource "aws_subnet" "public-frontend_az-b" {
     map_public_ip_on_launch = true
     vpc_id = "${aws_vpc.gitlabha.id}"
       tags {
-      Name = "Subnet-eu-central-1b-Web"
+      Name = "Subnet-eu-central-1b-Frontend"
   }
 }
 

@@ -1,0 +1,22 @@
+# The URL GitLab is available on
+external_url 'http://{{ hostvars[groups['gitlab'][0]]['geo_primary_address'] }}'
+
+#disable letsencrypt for demo purposes
+letsencrypt['enable'] = false
+
+gitlab_rails['license_file'] = "/etc/gitlab/Gitlab.gitlab-license"
+
+roles ['geo_primary_role']
+
+postgresql['sql_user_password'] = "{{ generated_db_pass }}"
+
+postgresql['listen_address'] = "{{ hostvars[groups['gitlab'][0]]['ansible_eth0']['ipv4']['address'] }}"
+
+postgresql['md5_auth_cidr_addresses'] =  %w({{ hostvars[groups['gitlab'][0]]['geo_primary_address'] }} {{ hostvars[groups['gitlab'][0]]['geo_secondary_address'] }})
+
+postgresql['max_replication_slots'] = 1
+
+postgresql['sql_replication_user'] = "gitlab_replication"
+
+gitlab_rails['auto_migrate'] = false
+

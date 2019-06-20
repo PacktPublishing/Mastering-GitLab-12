@@ -1,0 +1,73 @@
+---
+- name : Configure bastion server
+  hosts: bastion
+  become: yes
+  become_user: root
+  tasks :
+    # - name: Install Aptitude
+    #   apt:
+    #     update_cache: yes
+    #     name: aptitude
+
+    # - name: Full update Ubuntu
+    #   apt:
+    #     update_cache: yes
+    #     upgrade: full
+    #   register: task_result
+
+    # - name: (reboot) Reboot triggered
+    #   command: /sbin/shutdown -r +1 "Ansible-triggered Reboot"
+    #   async: 0
+    #   poll: 0
+    #   when: task_result is changed
+ 
+    # - name: Wait for the reboot to complete if there was a change.
+    #   wait_for_connection:
+    #     connect_timeout: 30
+    #     sleep: 60
+    #     delay: 120
+    #   when: task_result is changed
+      
+    - name: Install Squid
+      apt:
+        name: squid
+        update_cache: yes
+
+    - name: Allow connections to squid 
+      lineinfile:
+        dest: /etc/squid/squid.conf
+        regexp: '^http_access deny all'
+        line: 'http_access allow all'
+        state: present
+        backrefs: yes
+      notify: restart squid
+
+    - name: copy generated key with owner and permissions
+      copy:
+        src: "{{ hostvars[inventory_hostname].ansible_ssh_private_key_file}}"
+        dest:  "{{ hostvars[inventory_hostname].ansible_ssh_private_key_file}}"
+        owner: root
+        group: root
+        mode: 0600
+      when : hostvars[inventory_hostname].role == "primary"
+    
+    - name: copy generated key with owner and permissions
+      copy:
+        src: "{{ hostvars[inventory_hostname].ansible_ssh_private_key_file}}"
+        dest: "{{ hostvars[inventory_hostname].ansible_ssh_private_key_file}}"
+        owner: root
+        group: root
+        mode: 0600
+      when : hostvars[inventory_hostname].role == "secondary"
+
+    - name: copy ansible config to bastion hosts
+      copy:
+        src: .ansible.cfg
+        dest: /root/.ansible.cfg
+        owner: root
+        group: root
+        mode: 0644
+
+  handlers:
+    - name: restart squid
+      service: name=squid state=restarted
