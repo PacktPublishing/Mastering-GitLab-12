@@ -1,0 +1,113 @@
+- name : Configure Gitlab host
+  hosts: gitlab_primary
+  become: yes
+  become_user: root
+  vars:
+    proxy_env:
+      http_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+      https_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+      ftp_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+  environment: "{{ proxy_env }} "
+  tasks :
+    - name: Install Aptitude
+      apt:
+        update_cache: yes
+        name: aptitude
+
+    # - name: Full update Ubuntu
+    #   apt:
+    #     update_cache: yes
+    #     upgrade: full
+    #   register: task_result
+
+    # - name: Install list of packages
+    #   apt: name={{item}} state=installed
+    #   with_items:
+    #     - curl
+    #     - openssh-server
+    #     - ca-certificates
+    #     - postfix
+  
+    # - name: (reboot) Reboot triggered
+    #   command: /sbin/shutdown -r +1 "Ansible-triggered Reboot"
+    #   async: 0
+    #   poll: 0
+    #   when: task_result is changed
+ 
+    # - name: Wait for the reboot to complete if there was a change.
+    #   wait_for_connection:
+    #     connect_timeout: 30
+    #     sleep: 60
+    #     delay: 120
+    #   when: task_result is changed
+
+    - name: Add gitlab pkg repo
+      shell: 'curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | bash'
+      
+    - name: Creates gitlab config directory
+      file:
+        path: /etc/gitlab
+        state: directory
+        owner: root
+        group: root
+        mode: 0600
+      
+    - name: Place GitLab omnibus configuration file
+      template:
+        src: gitlab.rb.j2
+        dest: /etc/gitlab/gitlab.rb
+        owner: root
+        group: root
+        mode: 0600
+      
+    - name: Install license file to enable geo functionality
+      copy:
+        src: "Gitlab.gitlab-license"
+        dest: /etc/gitlab
+        mode: 0755
+
+    - name: Install gitlab omnibus
+      apt: name={{item}} state=installed
+      with_items:
+        - gitlab-ee
+ 
+    - name: Active changes
+      shell: "gitlab-ctl reconfigure"
+
+    - name: Fetch generated secrets from first appserver
+      fetch:
+        src: /etc/gitlab/gitlab-secrets.json
+        dest: /tmp/
+        flat: yes
+      when: hostvars[inventory_hostname].role == "primary"
+ 
+    - name: Find ssh host keys
+      shell: (cd /etc/ssh;find . -name "ssh_host*") | cut -d'/' -f2
+      register: ssh_host_keys
+      when: hostvars[inventory_hostname].role == "primary"
+
+    - name: Get ssh host keys
+      fetch: 
+        src: /etc/ssh/{{ item }}
+        dest: files/
+        flat: yes
+      with_items: "{{ ssh_host_keys.stdout_lines }}"
+      when: hostvars[inventory_hostname].role == "primary"
+  
+    - name: Enable fast lookup of ssh keys
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "{{ item }}"
+        create: yes
+      with_items:
+       - "AuthorizedKeysCommand /opt/gitlab/embedded/service/gitlab-shell/bin/gitlab-shell-authorized-keys-check git %u %k"
+       - "AuthorizedKeysCommandUser git"
+      
+    - name: Reload sshd
+      shell: "service sshd reload"
+
+    - name: Disable automigrations
+      shell: touch /etc/gitlab/skip-auto-reconfigure
+
+    - name: Restart services
+      shell: "gitlab-ctl restart"

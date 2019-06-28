@@ -1,5 +1,5 @@
 # The URL GitLab is available on
-external_url 'http://{{ hostvars[groups['gitlab'][0]]['geo_primary_address'] }}'
+external_url 'http://{{ hostvars[groups['gitlab_primary'][0]]['geo_primary_address'] }}'
 
 #disable letsencrypt for demo purposes
 letsencrypt['enable'] = false
@@ -10,13 +10,14 @@ roles ['geo_primary_role']
 
 postgresql['sql_user_password'] = "{{ generated_db_pass }}"
 
-postgresql['listen_address'] = "{{ hostvars[groups['gitlab'][0]]['ansible_eth0']['ipv4']['address'] }}"
+postgresql['listen_address'] = "*"
 
-postgresql['md5_auth_cidr_addresses'] =  %w({{ hostvars[groups['gitlab'][0]]['geo_primary_address'] }} {{ hostvars[groups['gitlab'][0]]['geo_secondary_address'] }})
+postgresql['md5_auth_cidr_addresses'] =  %w({{ hostvars[groups['gitlab_primary'][0]]['geo_primary_address'] }} {{ hostvars[groups['gitlab_secondary'][0]]['geo_secondary_address'] }} 10.0.1.0/24 localhost ip6-localhost )
 
 postgresql['max_replication_slots'] = 1
 
-postgresql['sql_replication_user'] = "gitlab_replication"
+postgresql['sql_replication_user'] = "gitlab_replicator"
+
+gitlab_rails['db_password'] = 'packtpub'
 
 gitlab_rails['auto_migrate'] = false
-

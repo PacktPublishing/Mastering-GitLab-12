@@ -38,9 +38,10 @@ resource "ansible_host" "BASTIONHOST002" {
   }
 }
 
+
 resource "ansible_host" "GITLABHOST001" {
   inventory_hostname = "${module.gitlab_eu.gitlabhost_fqdn}"
-  groups = ["gitlab"]
+  groups = ["gitlab_primary"]
   vars
   { 
       role = "primary"
@@ -55,9 +56,10 @@ resource "ansible_host" "GITLABHOST001" {
   }
 }
 
+
 resource "ansible_host" "GITLABHOST002" {
   inventory_hostname = "${module.gitlab_us.gitlabhost_fqdn}"
-  groups = ["gitlab"]
+  groups = ["gitlab_secondary"]
   vars
   {
       role = "secondary"

@@ -1,12 +1,12 @@
+external_url 'http://{{ hostvars[groups['gitlab_primary'][0]]['geo_secondary_address'] }}'
 
- roles ['geo_secondary_role']
+roles ['geo_secondary_role']
  
- postgresql['listen_address'] = ""{{ hostvars[groups['gitlab'][1]]['ansible_eth0']['ipv4']['address'] }}""
- postgresql['md5_auth_cidr_addresses'] = ["{{ hostvars[groups['gitlab'][1]]['ansible_eth0']['ipv4']['address'] }}"]
+postgresql['listen_address'] = "*"
 
+postgresql['md5_auth_cidr_addresses'] =  %w({{ hostvars[groups['gitlab_primary'][0]]['geo_primary_address'] }} {{ hostvars[groups['gitlab_secondary'][0]]['geo_secondary_address'] }} localhost ip6-localhost )
  
- postgresql['sql_user_password'] = "{{ generated_db_pass }}"
- gitlab_rails['db_password'] = 'packtpub'
+postgresql['sql_user_password'] =  "{{ generated_db_pass }}"
+gitlab_rails['db_password'] = 'packtpub'
 
- 
- geo_secondary['db_fdw'] = true
+geo_secondary['db_fdw'] = true

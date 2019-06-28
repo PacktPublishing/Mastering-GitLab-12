@@ -42,6 +42,12 @@ resource "aws_elb" "lb" {
         lb_port = 5432
         lb_protocol = "tcp"
     }
+     listener {
+        instance_port = 22
+        instance_protocol = "tcp"
+        lb_port = 22
+        lb_protocol = "tcp"
+    }
     cross_zone_load_balancing = true
     instances = ["${aws_instance.gitlab_host.id}"]
     security_groups = ["${aws_security_group.sg_lb.id}"]
@@ -55,6 +61,13 @@ resource "aws_security_group" "sg_gitlab"
 {
     vpc_id = "${aws_vpc.gitlab_ha.id}"
     description = "Security group for gitlab host"
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "TCP"
+        security_groups = ["${aws_security_group.sg_bastionhost.id}"]
+        description = "Allow incoming SSH traffic from bastion host"
+    }
     ingress {
         from_port = 22
         to_port = 22
@@ -116,6 +129,16 @@ resource "aws_security_group_rule" "lbpostgresaccess" {
     description = "Allow Postgres access from loadbalancers"
 }
 
+resource "aws_security_group_rule" "lbgitsshaccess" {
+    security_group_id = "${aws_security_group.sg_gitlab.id}"
+    type = "ingress"
+    from_port = 22
+    to_port = 22
+    protocol = "TCP"
+    source_security_group_id = "${aws_security_group.sg_lb.id}"
+    description = "Allow git over ssh access from loadbalancers"
+}
+
 resource "aws_security_group" "sg_bastionhost" {
   vpc_id = "${aws_vpc.gitlab_ha.id}"
   description = "Security group for bastion host"
@@ -163,11 +186,11 @@ resource "aws_security_group" "sg_lb"
         description = "Allow incoming HTTP traffic from anywhere"
     }
     ingress {
-        from_port = 80
-        to_port = 80
+        from_port = 22
+        to_port = 22
         protocol = "TCP"
         cidr_blocks = ["0.0.0.0/0"]
-        description = "Allow incoming HTTP traffic from anywhere"
+        description = "Allow incoming git ssh traffic from anywhere"
     }
     ingress {
         from_port = 443
@@ -176,7 +199,26 @@ resource "aws_security_group" "sg_lb"
         cidr_blocks = ["0.0.0.0/0"]
         description = "Allow incoming HTTPS traffic from anywhere"
     }
+    ingress {
+        from_port = 5432
+        to_port = 5432
+        protocol = "TCP"
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "Allow incoming Postgres from anywhere"
+    }
     egress {
+        from_port = 5432
+        to_port = 5432
+        protocol = "TCP"
+        security_groups = ["${aws_security_group.sg_gitlab.id}"]
+    }
+    egress {
+        from_port = 22
+        to_port = 22
+        protocol = "TCP"
+        security_groups = ["${aws_security_group.sg_gitlab.id}"]
+    }
+     egress {
         from_port = 80
         to_port = 80
         protocol = "TCP"

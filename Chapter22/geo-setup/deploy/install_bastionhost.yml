@@ -4,10 +4,10 @@
   become: yes
   become_user: root
   tasks :
-    # - name: Install Aptitude
-    #   apt:
-    #     update_cache: yes
-    #     name: aptitude
+    - name: Install Aptitude
+      apt:
+        update_cache: yes
+        name: aptitude
 
     # - name: Full update Ubuntu
     #   apt:

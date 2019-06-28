@@ -1,5 +1,5 @@
-- name : Configure Gitlab host
-  hosts: gitlab
+- name : Enable DB replication
+  hosts: gitlab*
   become: yes
   become_user: root
   vars:
@@ -31,11 +31,9 @@
             password:
               - "packtpub"
               - "packtpub"
-        when : hostvars[inventory_hostname].role == "primary"
 
       - set_fact:
           generated_db_pass: "{{ db_md5.stdout_lines[2] }}"
-        when: hostvars[inventory_hostname].role == "primary"
  
       - name: Set gitlab-replicator password
         expect:
@@ -43,29 +41,91 @@
           responses:
             password:
               - "packtpub"
-              - "packtpub"   
-        when : hostvars[inventory_hostname].role == "primary"
+              - "packtpub" 
+        when : hostvars[inventory_hostname].role == "primary"  
 
       - name: Place GitLab omnibus configuration file
         template:
-         src: gitlab.rb.replication.j2
+         src: gitlab.rb.primary.j2
          dest: /etc/gitlab/gitlab.rb
          owner: root
          group: root
          mode: 0600
         when : hostvars[inventory_hostname].role == "primary"
 
-      - name: Reconfigure gitlab
-        shell: "gitlab-ctl reconfigure"
-        when : hostvars[inventory_hostname].role == "primary"
-
       - name: Restart postgres
         shell: "gitlab-ctl restart postgresql"
         when : hostvars[inventory_hostname].role == "primary"
 
-      - name: Specifying a destination path
+      - name: Fetch DB ssl cert
         fetch:
-          src: /var/opt/gitlab/gitlab-psql/data/server.crt
+          src: /var/opt/gitlab/postgresql/data/server.crt
           dest: db-cert.crt
           flat: yes
           when : hostvars[inventory_hostname].role == "primary"
+      
+      - name: Stop unicorn
+        shell: "gitlab-ctl stop unicorn"
+        when : hostvars[inventory_hostname].role == "secondary"
+ 
+      - name: Stop sidekiq
+        shell: "gitlab-ctl stop sidekiq"
+        when : hostvars[inventory_hostname].role == "secondary"
+      
+      - name: Creates postgres user config dir
+        file:
+         path: /var/opt/gitlab/postgresql/.postgresql/
+         state: directory
+         owner: gitlab-psql
+         group: git
+         mode: 0700
+      
+      - name: Place ssl cert file for postgres
+        copy:
+         src:  db-cert.crt
+         dest: /var/opt/gitlab/postgresql/.postgresql/root.crt
+         owner: gitlab-psql
+         group: git
+         mode: 0644
+        when : hostvars[inventory_hostname].role == "secondary"
+            
+      - name: Place GitLab omnibus configuration file
+        template:
+         src: gitlab.rb.secondary.j2
+         dest: /etc/gitlab/gitlab.rb
+         owner: root
+         group: root
+         mode: 0600
+        when : hostvars[inventory_hostname].role == "secondary"
+
+      - name: Active changes
+        shell: "gitlab-ctl reconfigure"
+        when : hostvars[inventory_hostname].role == "secondary"
+
+      - name: Restart services
+        shell: "gitlab-ctl restart"
+        when : hostvars[inventory_hostname].role == "secondary"
+
+      - name: Active changes
+        shell: "gitlab-ctl reconfigure"
+        when : hostvars[inventory_hostname].role == "secondary"
+
+      - name: Initiate replication
+        expect:
+          command: "gitlab-ctl replicate-geo-database  --slot-name=us  --host={{ hostvars[groups['gitlab_primary'][0]]['geo_primary_address'] }} --no-wait --skip-backup"
+          responses:
+            password:
+              - "packtpub"
+        when : hostvars[inventory_hostname].role == "secondary"
+
+      - name: Add secondary node
+        command: |
+         gitlab-rails runner 'GeoNode.find_or_create_by!(url: "http://{{ hostvars[groups['gitlab_primary'][0]]['geo_secondary_address'] }}", name: "gitlab_us", primary: false)'
+        when : hostvars[inventory_hostname].role == "primary"
+
+      - name: Configure application settings
+        command: |
+         gitlab-rails runner 'ApplicationSetting.last.update(authorized_keys_enabled: false, hashed_storage_enabled: true)'
+        when : hostvars[inventory_hostname].role == "primary"
+
+

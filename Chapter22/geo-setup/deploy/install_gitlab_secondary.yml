@@ -1,7 +1,6 @@
 - name : Configure Gitlab host
-  hosts: gitlab
+  hosts: gitlab_secondary
   become: yes
-  #serial: 1
   become_user: root
   vars:
     proxy_env:
@@ -10,10 +9,10 @@
       ftp_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
   environment: "{{ proxy_env }} "
   tasks :
-    # - name: Install Aptitude
-    #   apt:
-    #     update_cache: yes
-    #     name: aptitude
+    - name: Install Aptitude
+      apt:
+        update_cache: yes
+        name: aptitude
 
     # - name: Full update Ubuntu
     #   apt:
@@ -72,9 +71,41 @@
       with_items:
         - gitlab-ee
 
+    - name: Copy generated secrets to second appserver
+      copy:
+        src: /tmp/gitlab-secrets.json
+        dest: /etc/gitlab/gitlab-secrets.json
+        owner: root
+        group: root
+        mode: 0600
+      when : hostvars[inventory_hostname].role == "secondary"
+
     - name: Active changes
       shell: "gitlab-ctl reconfigure"
- 
+
+    - name: Copy ssh host keys to secondary
+      copy:
+        src: "{{ item }}"
+        dest: "/etc/ssh/"
+        owner: "root"
+        mode: 0600
+        force: yes
+      with_fileglob:
+        - "files/ssh_host*"
+      when: hostvars[inventory_hostname].role == "secondary"
+
+    - name: Enable fast lookup of ssh keys
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "{{ item }}"
+        create: yes
+      with_items:
+       - "AuthorizedKeysCommand /opt/gitlab/embedded/service/gitlab-shell/bin/gitlab-shell-authorized-keys-check git %u %k"
+       - "AuthorizedKeysCommandUser git"
+      
+    - name: Reload sshd
+      shell: "service sshd reload"
+
     - name: Disable automigrations
       shell: touch /etc/gitlab/skip-auto-reconfigure
 
