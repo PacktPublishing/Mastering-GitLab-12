@@ -51,10 +51,15 @@
          owner: root
          group: root
          mode: 0600
+         force: yes
         when : hostvars[inventory_hostname].role == "primary"
 
-      - name: Restart postgres
-        shell: "gitlab-ctl restart postgresql"
+      - name: Activate changes
+        shell: "gitlab-ctl reconfigure"
+        when : hostvars[inventory_hostname].role == "primary"
+
+      - name: Restart services
+        shell: "gitlab-ctl stop;gitlab-ctl kill;gitlab-ctl start"
         when : hostvars[inventory_hostname].role == "primary"
 
       - name: Fetch DB ssl cert
@@ -96,9 +101,10 @@
          owner: root
          group: root
          mode: 0600
+         force: yes
         when : hostvars[inventory_hostname].role == "secondary"
 
-      - name: Active changes
+      - name: Activate changes
         shell: "gitlab-ctl reconfigure"
         when : hostvars[inventory_hostname].role == "secondary"
 
@@ -106,7 +112,7 @@
         shell: "gitlab-ctl restart"
         when : hostvars[inventory_hostname].role == "secondary"
 
-      - name: Active changes
+      - name: Activate changes
         shell: "gitlab-ctl reconfigure"
         when : hostvars[inventory_hostname].role == "secondary"
 

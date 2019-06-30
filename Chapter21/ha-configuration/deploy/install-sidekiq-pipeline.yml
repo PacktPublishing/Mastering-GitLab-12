@@ -1,0 +1,107 @@
+---
+- name : Configure middleware application servers which handle pipeline traffic
+  hosts: middleware_pipeline
+  become: yes
+  serial: 1
+  become_user: root
+  vars:
+    proxy_env:
+      http_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+      https_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+      ftp_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
+  environment: "{{ proxy_env }} "
+  tasks :
+    - name: Display role
+      debug:
+        var: hostvars[inventory_hostname].role
+        verbosity: 0
+
+    - name: Install Aptitude
+      apt:
+        update_cache: yes
+        name: aptitude
+
+    # - name: Full update Ubuntu
+    #   apt:
+    #     update_cache: yes
+    #     upgrade: full
+    #   register: task_result
+
+    # - name: Install list of packages
+    #   apt: name={{item}} state=installed
+    #   with_items:
+    #     - curl
+    #     - openssh-server
+    #     - ca-certificates
+    #     - postfix
+
+    # - name: (reboot) Reboot triggered
+    #   command: /sbin/shutdown -r +1 "Ansible-triggered Reboot"
+    #   async: 0
+    #   poll: 0
+    #   when: task_result is changed
+ 
+    # - name: Wait for the reboot to complete if there was a change.
+    #   wait_for_connection:
+    #     connect_timeout: 30
+    #     sleep: 60
+    #     delay: 120
+    #   when: task_result is changed
+
+    - name: Add gitlab pkg repo
+      shell: 'curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | bash'
+      
+    - name: Creates gitlab config directory
+      file:
+        path: /etc/gitlab
+        state: directory
+        owner: root
+        group: root
+        mode: 0600
+      
+    - name: Place GitLab omnibus configuration file
+      template:
+        src: gitlab.rb.sidekiq_pipeline.j2
+        dest: /etc/gitlab/gitlab.rb
+        owner: root
+        group: root
+        mode: 0600
+
+    - name: Install gitlab omnibus
+      apt: name={{item}} state=installed
+      with_items:
+        - gitlab-ee
+     
+    - name: Active changes
+      shell: "gitlab-ctl reconfigure"
+      when: hostvars[inventory_hostname].role == "master"
+ 
+    - name: Transfer generated secrets from first appserver
+      fetch:
+        src: /etc/gitlab/gitlab-secrets.json
+        dest: /tmp/
+        flat: yes
+      when: hostvars[inventory_hostname].role == "master"
+    
+    - name: Transfer generated secrets from first appserver
+      copy:
+        src: /tmp/gitlab-secrets.json
+        dest: /etc/gitlab/gitlab-secrets.json
+        owner: root
+        group: root
+        mode: 0600
+      when: hostvars[inventory_hostname].role == "slave"
+    
+    - name: Active changes
+      shell: "gitlab-ctl reconfigure"
+
+    - name: Disable automigrations
+      shell: touch /etc/gitlab/skip-auto-reconfigure
+       
+    - name: Pause for 1 minute to give reconfigure time
+      pause:
+        minutes: 1
+
+    - name: Restart services
+      shell: "gitlab-ctl restart"
+   

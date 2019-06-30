@@ -1,0 +1,48 @@
+
+sidekiq_cluster['enable'] = true
+sidekiq_cluster['ha'] = true
+sidekiq_cluster['max_concurrency'] = 15 # The maximum number of threads each Sidekiq process should run
+ 
+gitlab_rails['internal_api_url'] = "http://{{ hostvars[groups['frontend'][0]]['inventory_hostname'] }}:8080"
+
+sidekiq_cluster['queue_groups'] = [
+   "update_merge_requests,auto_merge",
+   "process_commit",
+   "deployment"
+ ]
+
+## Disable all other services
+gitlab_workhorse['enable'] = false
+unicorn['enable'] = false
+postgresql['enable'] = false
+nginx['enable'] = false
+prometheus['enable'] = false
+alertmanager['enable'] = false
+pgbouncer_exporter['enable'] = false
+gitlab_monitor['enable'] = false
+sidekiq['enable'] = false
+gitaly['enable'] = false
+redis['enable'] = false
+grafana['enable'] = false
+
+# Gitaly
+git_data_dirs({
+  'default' => { 'path' => '/var/opt/gitlab/git-data','gitaly_address' => 'tcp://{{ hostvars[groups['gitaly'][0]]['inventory_hostname'] }}:8075' }
+})
+gitlab_rails['gitaly_token'] = 'abc123secret'
+
+# PostgreSQL connection attributes
+gitlab_rails['db_adapter'] = 'postgresql'
+gitlab_rails['db_encoding'] = 'unicode'
+gitlab_rails['db_password'] = 'packtpub'
+gitlab_rails['db_host'] =  '{{ hostvars[groups['pgbouncer'][0]]['inventory_hostname'] }}' # IP/hostname of database server
+gitlab_rails['db_port'] = 6432
+
+# Redis connection details
+gitlab_rails['redis_port'] = '6379'
+gitlab_rails['redis_host'] = '{{ hostvars[groups['redis'][1]]['inventory_hostname'] }}' # IP/hostname of Redis server
+gitlab_rails['redis_password'] = 'packtpub'
+
+#disable letsencrypt for demo purposes
+letsencrypt['enable'] = false
+gitlab_rails['auto_migrate'] = false

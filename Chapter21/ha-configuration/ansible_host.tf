@@ -71,7 +71,7 @@ resource "ansible_host" "SIDEKIQ001" {
   vars
   {
       ansible_user = "ubuntu"
-      role = "slave"
+      role = "all"
       ansible_ssh_private_key_file="/tmp/mykey.pem"
       ansible_python_interpreter="/usr/bin/python3"
       ansible_ssh_common_args= " -o ProxyCommand=\"ssh -o StrictHostKeyChecking=no -i /tmp/mykey.pem -W %h:%p -q ubuntu@${aws_instance.BASTIONHOST_A.public_dns}\""
@@ -82,11 +82,11 @@ resource "ansible_host" "SIDEKIQ001" {
 
 resource "ansible_host" "SIDEKIQ002" {
   inventory_hostname = "${aws_instance.SIDEKIQ_B.private_dns}"
-  groups = ["middleware"]
+  groups = ["middleware_asap"]
   vars
   {
       ansible_user = "ubuntu"
-      role = "master"
+      role = "asap"
       ansible_ssh_private_key_file="/tmp/mykey.pem"
       ansible_python_interpreter="/usr/bin/python3"
       ansible_ssh_common_args= " -o ProxyCommand=\"ssh -o StrictHostKeyChecking=no -i /tmp/mykey.pem -W %h:%p -q ubuntu@${aws_instance.BASTIONHOST_B.public_dns}\""
@@ -97,11 +97,11 @@ resource "ansible_host" "SIDEKIQ002" {
 
 resource "ansible_host" "SIDEKIQ003" {
   inventory_hostname = "${aws_instance.SIDEKIQ_C.private_dns}"
-  groups = ["middleware"]
+  groups = ["middleware_pipeline"]
   vars
   {
       ansible_user = "ubuntu"
-      role = "master"
+      role = "ci_pipeline"
       ansible_ssh_private_key_file="/tmp/mykey.pem"
       ansible_python_interpreter="/usr/bin/python3"
       ansible_ssh_common_args= " -o ProxyCommand=\"ssh -o StrictHostKeyChecking=no -i /tmp/mykey.pem -W %h:%p -q ubuntu@${aws_instance.BASTIONHOST_B.public_dns}\""
@@ -112,7 +112,7 @@ resource "ansible_host" "SIDEKIQ003" {
 
 resource "ansible_host" "SIDEKIQ004" {
   inventory_hostname = "${aws_instance.SIDEKIQ_D.private_dns}"
-  groups = ["middleware"]
+  groups = ["middleware_realtime"]
   vars
   {
       ansible_user = "ubuntu"
@@ -244,7 +244,7 @@ resource "ansible_host" "REDIS003" {
       proxy = "${aws_instance.BASTIONHOST_B.private_ip}"
   }
 }
- 
+
 
 resource "ansible_host" "CONSUL001" {
   inventory_hostname = "${aws_instance.CONSUL_A.private_dns}"

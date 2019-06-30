@@ -1,0 +1,34 @@
+# Disable all components except Pgbouncer and Consul agent
+ roles ['pgbouncer_role']
+
+## Disable all other services
+sidekiq['enable'] = false
+gitlab_workhorse['enable'] = false
+unicorn['enable'] = false
+postgresql['enable'] = false
+nginx['enable'] = false
+prometheus['enable'] = false
+alertmanager['enable'] = false
+gitlab_monitor['enable'] = false
+gitaly['enable'] = false
+
+# Configure Pgbouncer
+pgbouncer['admin_users'] = %w(pgbouncer gitlab-consul)
+
+# Configure Consul agent
+consul['watchers'] = %w(postgresql)
+
+# Setup application passwords
+pgbouncer['users'] = {
+  'gitlab-consul': {
+    password: '46ae9788c600a7d8483796466f64033a'
+  },
+  'pgbouncer': {
+    password: '5da810d253b27c0a30ce8a19c4361659'
+  }
+}
+
+# Consul nodes
+consul['configuration'] = {
+  retry_join: %w({{ hostvars[groups['consul'][0]]['inventory_hostname'] }}  {{ hostvars[groups['consul'][1]]['inventory_hostname'] }} {{ hostvars[groups['consul'][2]]['inventory_hostname'] }})
+}
