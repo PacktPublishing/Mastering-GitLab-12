@@ -1,6 +1,6 @@
 resource "aws_elb" "lb" {
     name_prefix = "${var.environment}-"
-    subnets = ["${aws_subnet.pub-web-az-a.id}", "${aws_subnet.pub-web-az-b.id}"]
+    subnets = ["${aws_subnet.public-frontend_az-a.id}", "${aws_subnet.public-frontend_az-b.id}"]
     health_check {
         healthy_threshold = 2
         unhealthy_threshold = 2
@@ -15,8 +15,8 @@ resource "aws_elb" "lb" {
         lb_protocol = "http"
     }
     cross_zone_load_balancing = true
-    instances = ["${aws_instance.FRONTENDA.id}", "${aws_instance.FRONTENDB.id}"]
-    security_groups = ["${aws_security_group.LoadBalancerSG.id}"]
+    instances = ["${aws_instance.FRONTEND_A.id}", "${aws_instance.FRONTEND_B.id}"]
+    security_groups = ["${aws_security_group.SG-loadbalancer.id}"]
 }
  
  resource "aws_lb_cookie_stickiness_policy" "gitlab" {

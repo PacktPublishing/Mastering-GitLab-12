@@ -1,54 +1,29 @@
 # Files in this directory:
-Readme.md - this file
+Readme.md - this file 
 
-# Commands used in Chapter 6
+# Commands used in Chapter 4
 
-## Install git-lfs
+## Initiate a CVS repo
 ``` 
-brew install git-lfs
+cvs -d ~/cvsroot init
 ```
 
-## Enable git-lfs for your repository
+## Run Rake import task for GitLab Omnibus installations
 ``` 
-git lfs install
-``` 
-
-## Tag files as 'large'
-``` 
-git lfs track "*.dmg"
+sudo gitlab-rake "import:github[<personal_access_token>,<gitlab user>,<namespace/project>,<source_github_namepsace>/<github_repo>]"
 ``` 
 
-## Configure subgit to prepare for synchronization
+## Run Rake import task for GitLab installations from source
 ``` 
-/opt/subgit/bin/subgit configure --layout auto  $SVN_PROJECT_URL $GIT_REPO_PATH
-``` 
-
-## Initiate the synchronization between a SVN and Git repository with subgit
-``` 
-/opt/subgit/bin/subgit install $GIT_REPO_PATH
+bundle exec rake "import:github[<personal_access_token>,<gitlab user>,<namespace/project>,<source_namespace/github_repo>]" RAILS_ENV=production
 ``` 
 
-## Clear the GitLab cache
+## Run Rake import task for GitLab Omnibus installations
 ``` 
-gitlab-rake cache:clear
-``` 
-
-## Perform a one-off conversion between SVN and Git with subgit
-``` 
-/opt/subgit/bin/subgit import $GIT_REPO_PATH
-```
-
-## Install svn2git on Mac OSX
-``` 
-sudo gem install svn2git
+sudo gitlab-rake "import:github[<personal_access_token>,<gitlab user>,<namespace/project>]""
 ``` 
 
-## Install svn2git on Debian Linux
-```
-sudo apt-get install git-core git-svn ruby
+## Run Rake import task for GitLab installations from source
 ``` 
-
-## Perform the one-off migratiom from SVN to Git with svn2git
-```
-svn2git svn://svn.riscos.info/pdf 
+bundle exec rake "import:github[<personal_access_token>,<gitlab user>,<namespace/project>]" RAILS_ENV=production
 ``` 

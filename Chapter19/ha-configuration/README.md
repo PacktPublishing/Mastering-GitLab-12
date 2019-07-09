@@ -29,7 +29,7 @@ terraform init
 
 ## Automatic deployment
 ``` 
-./deploy-with-ansible.sh
+scripts/deploy-with-ansible.sh
 ``` 
 
 ## Manual deployment
@@ -43,11 +43,7 @@ terraform apply --auto-approve
 ``` 
 ## Output the generated private key (please use another location then /tmp if not a demo)
 ``` 
-terraform output  -json|jq .private_key.value -r >/tmp/privkey.pem && chmod 600 /tmp/privkey.pem
-``` 
-## Disable Ansible host key checking
-``` 
-export ANSIBLE_HOST_KEY_CHECKING=false
+terraform output  -json|jq .mykey.value -r >/tmp/mykey.pem && chmod 600 /tmp/mykey.pem
 ``` 
 ## Provision the Bastion hosts
 ``` 
@@ -55,7 +51,7 @@ ansible-playbook -i /usr/local/bin/terraform.py deploy/install.yml
 ``` 
 ## Provision the Postgresql master database
 ``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-postgres-core.yml 
+ansible-playbook -i /usr/local/bin/terraform.py deploy/install-postgres-master.yml 
 ``` 
 ## Provision the Postgresql slave database
 ``` 
@@ -73,15 +69,11 @@ ansible-playbook -i /usr/local/bin/terraform.py deploy/install-pgbouncer.yml
 ``` 
 ansible-playbook -i /usr/local/bin/terraform.py deploy/install-redis.yml
 ``` 
-## Provision the sidekiq backend
+## Provision the nfs server
 ``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-backend-services.yml
-``` 
-## Provision the gitaly server
-``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-gitaly.yml
+ansible-playbook -i /usr/local/bin/terraform.py deploy/install-nfs.yml
 ``` 
 ## Provision the GitLab Application hosts
 ``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-frontend-services.yml 
+ansible-playbook -i /usr/local/bin/terraform.py deploy/install-gitlab.yml
  ``` 

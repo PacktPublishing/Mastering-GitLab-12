@@ -1,8 +1,11 @@
+# What is this?
+A simple python program to start listening on a socket and display certain fields from the incoming webhook.
 
-# Files in this directory:
-Readme.md - this file 
+## Technical Requirements
 
-.gitlab-ci.yml - a sample configuation file for a CI Job
+* NGROK : https://ngrok.com  
+* python  
 
+## Running the example:
 
- 
+python server.py

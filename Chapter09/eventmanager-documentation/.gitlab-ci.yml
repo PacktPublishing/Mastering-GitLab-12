@@ -1,8 +1,0 @@
-review apps:
-  variables:
-    S3_BUCKET_NAME: "joustie-1"
-  image: python:latest
-  environment: review
-  script:
-  - pip install awscli
-  - aws s3 cp public/*.html s3://$S3_BUCKET_NAME/

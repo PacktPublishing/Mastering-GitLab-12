@@ -4,7 +4,7 @@ require 'securerandom'
 yaml_hash = YAML.load_file('attendees.yml')
 p yaml_hash['attendees']
 
-yaml_hash['attendees'].each do |_letter, hash|
+yaml_hash['attendees'].each do |letter, hash|
   p hash['name']
   p hash['email']
   p hash['attending']

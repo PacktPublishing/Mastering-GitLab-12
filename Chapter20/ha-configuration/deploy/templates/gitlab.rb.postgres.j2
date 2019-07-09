@@ -26,12 +26,9 @@ gitlab_rails['auto_migrate'] = false
 #Set the number of wal senders to how many postgresql servers +1
 postgresql['max_wal_senders'] = 4
 
-# Set the number of replication slots to the number of postgres slaves
-postgresql['max_replication_slots'] = 2
-
 # Create a whitelist
 postgresql['trust_auth_cidr_addresses'] = %w({{ hostvars[groups['db'][0]]['subnet'] }} {{ hostvars[groups['db'][1]]['subnet'] }} {{ hostvars[groups['db'][2]]['subnet'] }})
-postgresql['md5_auth_cidr_addresses'] =  %w({{ hostvars[groups['frontend'][0]]['inventory_hostname'] }} {{ hostvars[groups['frontend'][1]]['inventory_hostname'] }} {{ hostvars[groups['middleware'][0]]['inventory_hostname'] }}  {{ hostvars[groups['middleware'][1]]['inventory_hostname'] }} )
+postgresql['md5_auth_cidr_addresses'] =  %w({{ hostvars[groups['frontend'][0]]['inventory_hostname'] }} {{ hostvars[groups['frontend'][1]]['inventory_hostname'] }} {{ hostvars[groups['backend'][0]]['inventory_hostname'] }}  {{ hostvars[groups['backend'][0]]['inventory_hostname'] }} )
 repmgr['trust_auth_cidr_addresses'] = %w({{ hostvars[groups['db'][0]]['subnet'] }} {{ hostvars[groups['db'][1]]['subnet'] }} {{ hostvars[groups['db'][2]]['subnet'] }})
 
 # Configure the consul agent
@@ -39,6 +36,6 @@ consul['services'] = %w(postgresql)
 
 # Consul nodes
 consul['configuration'] = {
-   retry_join: %w({{ hostvars[groups['consul'][0]]['inventory_hostname'] }}  {{ hostvars[groups['consul'][1]]['inventory_hostname'] }} )
+   retry_join: %w({{ hostvars[groups['consul'][0]]['inventory_hostname'] }}  {{ hostvars[groups['consul'][1]]['inventory_hostname'] }} {{ hostvars[groups['consul'][2]]['inventory_hostname'] }})
 }
 

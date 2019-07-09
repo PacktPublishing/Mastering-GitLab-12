@@ -1,51 +1,43 @@
+
 # Files in this directory:
 Readme.md - this file 
 
-# HA-configuration
+config.toml- a sample configuration file for a GitLab Runner with monitoring enabled
 
-In the directory ha-configuration you fill find example project which show jow to create a HA GitLab configuration. More info in the README.md there.
+# Commands used in Chapter 17
 
+## Restart GitLab Runner with the Homebrew package manager for macOS
 ``` 
-.
-├── README.md
-├── ansible.cfg
-├── ansible_host.tf
-├── deploy
-│   ├── files
-│   ├── install-bastions-hosts.yml
-│   ├── install-consul.yml
-│   ├── install-gitlab.yml
-│   ├── install-nfs.yml
-│   ├── install-pgbouncer.yml
-│   ├── install-postgres-core.yml
-│   ├── install-postgres-slaves.yml
-│   ├── install-redis.yml
-│   └── templates
-│       ├── databases.ini.j2
-│       ├── gitlab.rb.consul.j2
-│       ├── gitlab.rb.j2
-│       ├── gitlab.rb.pgbouncer.j2
-│       ├── gitlab.rb.postgres.j2
-│       ├── gitlab.rb.redis.j2
-│       ├── nfs_exports.j2
-│       └── pgpass.j2
-├── images
-│   └── terraform-ha1.xml
-├── instance.tf
-├── internet_gateway.tf
-├── keypair.tf
-├── lb.tf
-├── provider.tf
-├── route_table.tf
-├── scripts
-│   ├── connect_ssh.sh
-│   ├── create_screenfile.sh
-│   ├── deploy-with-ansible.sh
-│   ├── new_window.sh
-│   ├── screen.sh
-│   └── superscreen.sh
-├── security_group.tf
-├── subnet.tf
-├── variable.tf
-└── vpc.tf
+brew services  restart  gitlab-runner
+```
+
+## Restart GitLab Runner on other Unix platform
 ``` 
+sudo killall -SIGHUP gitlab-runner
+``` 
+
+## Start Prometheus container
+``` 
+docker run -p 9090:9090 -v ~/srv/prometheus:/etc/prometheus prom/prometheus
+``` 
+
+## Start Alertmanager container
+``` 
+docker run  -dp 9093:9093 --name=prom_alertmanager -v ~/srv/prometheus/alertmanager.yml:/alertmanager.yml prom/alertmanager --config.file=/alertmanager.yml
+``` 
+
+## Stop Prometheus container
+``` 
+docker stop prom_server
+``` 
+
+## Remove Prometheus container
+``` 
+docker rm prom_server
+``` 
+
+## Start Prometheus container with Alertmanager enabled
+``` 
+docker run  -dp 9090:9090 --name=prom_server -v /Users/joostevertse/srv/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml -v ~/srv/prometheus/alert.rules:/etc/prometheus/alert.rules prom/prometheus  --config.file=/etc/prometheus/prometheus.yml
+``` 
+

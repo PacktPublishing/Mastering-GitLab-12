@@ -1,4 +1,4 @@
-# Basic Horizontal Scaling for GitLab with Amazon, Terraform and Ansible
+# A new iteration of Horizontal Scaling for GitLab with Amazon, Terraform and Ansible
 
 ## Requirements
 * terraform >= v0.11.12
@@ -6,16 +6,6 @@
  * provider.tls v1.2.0
 * ansible >= 2.7.10 
 * jq >= 1.6
-
-## Directories
-``` 
-.
-├── deploy  -- Directoru with ansible playbooks
-│   ├── files  -- Directory with some files for use in playbooks
-│   └── templates -- Directory with Jinja2 templates for use in playbooks
-├── images  -- Directory with diagram of architecture
-└── scripts -- Directory with scripts to run
-``` 
 
 ## Ansible configuration
 Make sure the following is put in your ansible configuration file in /etc or your home directory:
@@ -31,66 +21,10 @@ _Other options: https://stackoverflow.com/questions/23074412/how-to-set-host-key
 ``` 
 export ANSIBLE_HOST_KEY_CHECKING=false
 ``` 
-
-## Preparations for deployment
-
-### Initialize the terraform provider and plugins (Amazon and ansible plugin)
-terraform init
+ 
 
 ## Automatic deployment
 ``` 
 ./scripts/deploy-with-ansible.sh
 ``` 
 
-## Manual deployment
-
-First disable host key checking (would not do that for production sites)
-
-``` 
-export ANSIBLE_HOST_KEY_CHECKING=false
-``` 
-
-### Test the terraform configuration
-``` 
-terraform plan
-``` 
-### Run the infrastructure deployment
-``` 
-terraform apply --auto-approve
-``` 
-## Output the generated private key (please use another location then /tmp if not a demo)
-``` 
-terraform output  -json|jq .mykey.value -r >/tmp/mykey.pem && chmod 600 /tmp/mykey.pem
-``` 
-## Provision the Bastion hosts
-``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-bastion-hosts.yml
-``` 
-## Provision the Postgresql master database
-``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-postgres-core.yml 
-``` 
-## Provision the Postgresql slave databases
-``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-postgres-slaves.yml 
-``` 
-## Provision the Consul agents
-``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-consul.yml 
-``` 
-## Provision the PGBouncer instance
-``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-pgbouncer.yml
-``` 
-## Provision the Redis nodes
-``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-redis.yml
-``` 
-## Provision the gitaly server
-``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-gitaly.yml
-``` 
-## Provision the GitLab Application hosts
-``` 
-ansible-playbook -i /usr/local/bin/terraform.py deploy/install-gitlab.yml
- ``` 

@@ -2,58 +2,44 @@
 # Files in this directory:
 Readme.md - this file 
 
-config.toml- a sample configuration file for a GitLab Runner 
+Dockerfile - dockerfile example used in this chapter
 
-# Commands used in Chapter 16
 
-## Install GitLab Runner with the Homebrew package manager for macOS
+# Commands used in Chapter 15
+
+## Build the container with the following command
 ``` 
-brew install gitlab-runner
+docker build --no-cache -t <name of docker image to build> . 
+``` 
+
+## Command to display installed Docker images on the system
+``` 
+dokcer images
+``` 
+
+## Run a Docker image
+``` 
+docker run -ti <name of runner image to run>
 ```
 
-## Register the GitLab Runner instance with GitLab
+## Run the GitLab Runner Docker image with drive mappings
 ``` 
-gitlab-runner register
+docker run -d --name gitlab-runner -v /Users/shared/gitlab-runner/config:/etc/gitlab-runner \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    gitlab/gitlab-runner:latest
+    ``` 
+
+## View the standard output of a container 
+``` 
+dockers logs -f <name of running container>
 ``` 
 
-## Check the version of the Docker-machine binary
+## Install gitlab-runner Helm chart into cluster
 ``` 
-docker-machine -v
-``` 
+helm install --namespace gitlab --name gitlabrunner -f values.yaml  gitlab/gitlab-runner
+```
 
-## Download the latest version of the Docker-machine binary
+## View list of Kubernetes pods in the cluster
 ``` 
-wget -q https://github.com/docker/machine/releases/download/v0.7.0/docker-machine-Linux-x86_64 -O /usr/bin/docker-machine && \
-     chmod +x /usr/bin/docker-machine
+kubectl get pods -n gitlab
 ``` 
-
-## Start the Docker registry container with a port mapping form 6000:5000
-``` 
-docker run -d -p 6000:5000 -e REGISTRY_PROXY_REMOTEURL=https://registry-1.docker.io  --name runner-registry registry:2
-``` 
-
-## Access the standard output of the container called 'registry'
-``` 
-docker logs registry -f
-``` 
-
-## Start the local Minio S3 object store and name it 'caching-server' and map port 9005:9000 
-``` 
-docker run -it -p 9005:9000 -v ~/.minio:/root/.minio -v /s3:/export --name caching-server minio/minio:latest server /export
-``` 
-
-## Start the GitLab Runner using the Homebrew package manager
-``` 
-brew services start gitlab-runner
-``` 
-
-## Change the context to a different Docker engine to control. In this case the vm runner-fatr91wm-elastic-runner-1558647049-87941946
-``` 
-eval $(docker-machine env runner-fatr91wm-elastic-runner-1558647049-87941946)
-``` 
-
-## Get a list of vm's in control of docker-machine
-``` 
-docker-machine ls
-``` 
-
