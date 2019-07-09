@@ -10,4 +10,4 @@ export ANSIBLE_HOST_KEY_CHECKING=false
 ansible-playbook -i /usr/local/bin/terraform.py deploy/install_bastionhost.yml && \
 ansible-playbook -i /usr/local/bin/terraform.py deploy/install_gitlab_primary.yml && \
 ansible-playbook -i /usr/local/bin/terraform.py deploy/install_gitlab_secondary.yml && \
-ansible-playbook -i /usr/local/bin/terraform.py deploy/configure_replication.yml
+ansible-playbook -vvv  -i /usr/local/bin/terraform.py deploy/configure_replication.yml

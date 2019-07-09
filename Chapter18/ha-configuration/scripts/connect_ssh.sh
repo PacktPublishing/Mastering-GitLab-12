@@ -9,8 +9,8 @@
 # Define the hosts
 declare -A cluster_hosts
 
-cluster_hosts=( ["bastion1"]=`/usr/local/bin/terraform.py| jq '.security.hosts[0]'` \
-["bastion2"]=`/usr/local/bin/terraform.py| jq '.security.hosts[1]'` \
+cluster_hosts=( ["bastion0"]=`/usr/local/bin/terraform.py| jq '.security.hosts[0]'` \
+["bastion1"]=`/usr/local/bin/terraform.py| jq '.security.hosts[1]'` \
 ["frontend0"]=`/usr/local/bin/terraform.py| jq '.frontend.hosts[0]'` \
 ["frontend1"]=`/usr/local/bin/terraform.py| jq '.frontend.hosts[1]'` \
 ["red0"]=`/usr/local/bin/terraform.py| jq '.redis.hosts[0]'` \

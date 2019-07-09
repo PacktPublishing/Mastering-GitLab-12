@@ -116,17 +116,38 @@
         shell: "gitlab-ctl reconfigure"
         when : hostvars[inventory_hostname].role == "secondary"
 
+      - name: Wait for restart
+        pause:
+          minutes: 1
+
       - name: Initiate replication
         expect:
           command: "gitlab-ctl replicate-geo-database  --slot-name=us  --host={{ hostvars[groups['gitlab_primary'][0]]['geo_primary_address'] }} --no-wait --skip-backup"
           responses:
             password:
               - "packtpub"
+        async: 1000
+        poll: 0
+        register: replication_job
         when : hostvars[inventory_hostname].role == "secondary"
+        vars:
+          ansible_command_timeout: 120
+
+      - name: 'DB replication - check job'
+        async_status: jid={{ replication_job.ansible_job_id }}
+        register: job_result
+        until: job_result.finished
+        retries: 50
+        when : hostvars[inventory_hostname].role == "secondary"
+
+      - name: Wait for restart
+        pause:
+          minutes: 3
+        when : hostvars[inventory_hostname].role == "primary"
 
       - name: Add secondary node
         command: |
-         gitlab-rails runner 'GeoNode.find_or_create_by!(url: "http://{{ hostvars[groups['gitlab_primary'][0]]['geo_secondary_address'] }}", name: "gitlab_us", primary: false)'
+         gitlab-rails runner 'GeoNode.find_or_create_by!(url: "http://{{ hostvars[groups['gitlab_primary'][0]]['geo_secondary_address'] }}", name: "http://{{ hostvars[groups['gitlab_primary'][0]]['geo_secondary_address'] }}", primary: false)'
         when : hostvars[inventory_hostname].role == "primary"
 
       - name: Configure application settings
