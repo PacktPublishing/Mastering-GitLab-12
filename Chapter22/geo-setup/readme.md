@@ -24,6 +24,16 @@ export ANSIBLE_HOST_KEY_CHECKING=false
 ``` 
 
 
+### Gitlab license 
+Place the gitlab license in files/Gitlab.gitlab-license
+
+
+### Terraform setup
+```
+terraform init
+```
+
+
 ## Automatic deployment
 ``` 
 ./deploy.sh
