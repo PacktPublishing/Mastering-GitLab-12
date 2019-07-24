@@ -26,6 +26,8 @@ gitlab_rails['auto_migrate'] = false
 #Set the number of wal senders to how many postgresql servers +1
 postgresql['max_wal_senders'] = 4
 
+postgresql['max_replication_slots'] = 4
+
 # Create a whitelist
 postgresql['trust_auth_cidr_addresses'] = %w({{ hostvars[groups['db'][0]]['subnet'] }} {{ hostvars[groups['db'][1]]['subnet'] }} {{ hostvars[groups['db'][2]]['subnet'] }})
 postgresql['md5_auth_cidr_addresses'] =  %w({{ hostvars[groups['frontend'][0]]['inventory_hostname'] }} {{ hostvars[groups['frontend'][1]]['inventory_hostname'] }})
