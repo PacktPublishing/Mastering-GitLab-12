@@ -16,3 +16,8 @@ gitlab_monitor['enable'] = false
 
 ## The default admin password is 'admin', change it here
 grafana['admin_password'] = 'admin'
+
+#disable letsencrypt for demo purposes
+letsencrypt['enable'] = false
+gitlab_rails['auto_migrate'] = false
+
