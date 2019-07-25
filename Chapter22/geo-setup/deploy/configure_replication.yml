@@ -18,10 +18,6 @@
         pip:
           name: pexpect
         become: yes
-
-      - name: Define the node as primary
-        shell: "gitlab-ctl set-geo-primary-node"
-        when : hostvars[inventory_hostname].role == "primary"
       
       - name: Generate a MD5 hash for the db user
         register: db_md5
@@ -115,9 +111,14 @@
       - name: Activate changes
         shell: "gitlab-ctl reconfigure"
         when : hostvars[inventory_hostname].role == "secondary"
+    
+      - name: Define the node as primary
+        shell: "gitlab-ctl set-geo-primary-node"
+        when : hostvars[inventory_hostname].role == "primary"
 
       - name: manually shutdown the logcursor
         shell: "gitlab-ctl stop geo-logcursor"
+        ignore_errors: yes
         when : hostvars[inventory_hostname].role == "secondary"
 
       - name: Wait for stopping
