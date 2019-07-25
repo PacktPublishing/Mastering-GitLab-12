@@ -23,7 +23,7 @@ _Other options: https://stackoverflow.com/questions/23074412/how-to-set-host-key
 export ANSIBLE_HOST_KEY_CHECKING=false
 ``` 
 ### Gitlab license 
-Place the gitlab license in /deploy/files/Gitlab.gitlab-license
+Place the gitlab license in deploy/files/Gitlab.gitlab-license
 
 ### Terraform setup
 ```
