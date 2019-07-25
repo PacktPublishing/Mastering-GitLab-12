@@ -116,13 +116,17 @@
         shell: "gitlab-ctl reconfigure"
         when : hostvars[inventory_hostname].role == "secondary"
 
-      - name: Wait for restart
+      - name: manually shutdown the logcursor
+        shell: "gitlab-ctl stop geo-logcursor"
+        when : hostvars[inventory_hostname].role == "secondary"
+
+      - name: Wait for stopping
         pause:
           minutes: 1
 
       - name: Initiate replication
         expect:
-          command: "gitlab-ctl replicate-geo-database  --slot-name=us  --host={{ hostvars[groups['gitlab_primary'][0]]['geo_primary_address'] }} --no-wait --skip-backup"
+          command: "gitlab-ctl replicate-geo-database  --slot-name=us  --host={{ hostvars[groups['gitlab_primary'][0]]['geo_primary_address'] }} --no-wait --skip-backup --force"
           responses:
             password:
               - "packtpub"
@@ -132,7 +136,7 @@
         register: replication_job
         when : hostvars[inventory_hostname].role == "secondary"
         vars:
-          ansible_command_timeout: 120
+          ansible_command_timeout: 1200
 
       - name: 'DB replication - check job'
         async_status: jid={{ replication_job.ansible_job_id }}
