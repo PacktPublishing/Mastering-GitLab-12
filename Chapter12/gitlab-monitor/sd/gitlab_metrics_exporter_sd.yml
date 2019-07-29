@@ -1,0 +1,3 @@
+- targets: ['gitlab-ee.joustie.nl']
+  labels:
+    app: gitlab

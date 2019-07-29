@@ -1,11 +1,22 @@
- - job_name: 'git-metrics'
- params:
- token: [ gitlab_health_check_access_token ]
- metrics_path: /-/metrics
- scrape_interval: 5s
- scheme: https
- tls_config:
- insecure_skip_verify: true
- file_sd_configs:
- - files:
- - /etc/prometheus/sd/gitlab_metrics_exporter_sd.yml
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: []
+    scheme: http
+    timeout: 10s
+scrape_configs:
+- job_name: 'git-metrics'
+  metrics_path: "/-/metrics"
+  params:
+   token: ["zjxXW8bAzbQydk5mznPn"]
+  scrape_interval: 5s
+  scheme: https
+  tls_config:
+   insecure_skip_verify: true
+  file_sd_configs:
+    - files:
+      - /etc/prometheus/sd/gitlab_metrics_exporter_sd.yml
