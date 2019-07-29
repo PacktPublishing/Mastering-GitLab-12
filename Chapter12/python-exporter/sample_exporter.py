@@ -13,6 +13,7 @@ def process_request(t):
 
 if __name__ == '__main__':
   # Start up the server to expose the metrics.
+ print "starting"
  start_http_server(8000)
  # Generate some requests.
  while True:
