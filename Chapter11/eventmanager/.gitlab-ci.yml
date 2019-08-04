@@ -76,7 +76,7 @@ build:
   stage: build
   image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-build-image/master:stable"
   services:
-    - docker:stable-dind
+    - docker:18.09-dind
   script:
     - /build/build.sh
   only:
@@ -106,7 +106,7 @@ code_quality:
   image: docker:stable
   allow_failure: true
   services:
-    - docker:stable-dind
+    - docker:18.09-dind
   script:
     - setup_docker
     - code_quality
@@ -144,7 +144,7 @@ performance:
   image: docker:stable
   allow_failure: true
   services:
-    - docker:stable-dind
+    - docker:18.09-dind
   script:
     - setup_docker
     - performance
@@ -166,7 +166,7 @@ sast:
   image: docker:stable
   allow_failure: true
   services:
-    - docker:stable-dind
+    - docker:18.09-dind
   script:
     - setup_docker
     - sast
@@ -188,7 +188,7 @@ dependency_scanning:
   image: docker:stable
   allow_failure: true
   services:
-    - docker:stable-dind
+    - docker:18.09-dind
   script:
     - setup_docker
     - dependency_scanning
@@ -210,7 +210,7 @@ container_scanning:
   image: docker:stable
   allow_failure: true
   services:
-    - docker:stable-dind
+    - docker:18.09-dind
   script:
     - setup_docker
     - container_scanning
