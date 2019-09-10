@@ -1,5 +1,6 @@
 # Files in this directory:
 Readme.md - this file
+InstallingRedis.md - instructions how to install Redis
 nginx.config - a sample configuration file for NGINX
 
 # Chapter 1, Introducing the GitLab Architecture
