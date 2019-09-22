@@ -4,13 +4,6 @@ Readme.md - this file
 
 # Commands used in Chapter 2
 
-## Open firewall on Linux
-``` 
-ufw allow http
-ufw allo https
-ufw allow OpenSSH
-``` 
-
 ## Reconfigure GitLab
 ``` 
 gitlab-ctl reconfigure
@@ -56,7 +49,6 @@ libncurses5-dev \
 libffi-dev \
 curl \
 openssh-server \
-checkinstall \
 libxml2-dev \
 libxslt-dev \
 libcurl4-openssl-dev \
@@ -70,13 +62,39 @@ wget
 
 ## Change locale
 ``` 
-sudo dpkg-reconfigure locales
+sudo apt-get update 
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+sudo locale-gen en_US.UTF-8
+sudo apt-get install -y curl openssh-server ca-certificates 
 ``` 
 
 ## Install Git
 ``` 
-sudo apt-get install -y git-core
+sudo apt-get install -y libcurl4-openssl-dev libexpat1-dev gettext libz-dev libssl-dev build-essential
+cd /tmp
+curl --silent --show-error --location https://ftp.pcre.org/pub/pcre/pcre2-10.33.tar.gz --output pcre2.tar.gz
+tar -xzf pcre2.tar.gz
+cd pcre2-10.33
+chmod +x configure
+./configure --prefix=/usr --enable-jit
+make
+sudo make install
+cd /tmp
+curl --remote-name --location --progress https://www.kernel.org/pub/software/scm/git/git-2.22.0.tar.gz
+echo 'a4b7e4365bee43caa12a38d646d2c93743d755d1cea5eab448ffb40906c9da0b  git-2.22.0.tar.gz' | shasum -a256 -c - && tar -xzf git-2.22.0.tar.gz
+cd git-2.22.0/
+./configure --with-libpcre
+make prefix=/usr/local all
+sudo make prefix=/usr/local install
+
 ``` 
+
+## Install graphicsmagick:
+```  
+sudo apt-get install -y graphicsmagick
+```  
 
 ## Install Postfix
 ``` 
@@ -90,8 +108,9 @@ sudo apt-get remove ruby1.8
 
 ## Get the newest Ruby
 ``` 
-wget https://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.5.tar.gz
-cd ruby-2.5.5
+wget https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.3.tar.gz
+shasum ruby-2.6.3.tar.gz 
+cd ruby-2.6.3
 ./configure --disable-install-rdoc
 make
 sudo make install
@@ -104,16 +123,15 @@ sudo gem install bundler --no-document --version '< 2'
 
 ## Get Golang
 ``` 
-wget https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz
-echo 'fa1b0e45d3b647c252f51f5e1204aba049cde4af177ef9f2181f43004f901035  go1.10.3.linux-amd64.tar.gz' | shasum -a256 -c - && \
-  sudo tar -C /usr/local -xzf go1.10.3.linux-amd64.tar.gz
+wget https://dl.google.com/go/go1.11.10.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.11.10.linux-amd64.tar.gz
 sudo ln -sf /usr/local/go/bin/{go,godoc,gofmt} /usr/local/bin/
-rm go1.10.3.linux-amd64.tar.gz
+rm go1.11.10.linux-amd64.tar.gz
 ``` 
 
 ## Get Nodejs and Yarn
 ``` 
-curl --location https://deb.nodesource.com/setup_8.x | sudo bash -
+curl --location https://deb.nodesource.com/setup_12.x | sudo bash -
  sudo apt-get install -y nodejs
 curl --silent --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 xecho "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
@@ -222,7 +240,7 @@ sudo usermod -aG redis git
 
 ## Clone the GitLab source
 ``` 
-sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 12-0-stable gitlab
+sudo -u git -H git clone https://gitlab.com/gitlab-org/gitlab-ce.git -b 12-2-stable gitlab
 ``` 
 
 ## Copy the example GitLab config
@@ -287,7 +305,7 @@ nproc
 
 ## Enable cluster mode if you expect to have a high load instance Set the number of workers to at least the number of cores Ex. change amount of workers to 3 for 2GB RAM server
 ``` 
-sudo -u git -H editor config/unicorn.rb
+sudo -u git vi config/unicorn.rb
 ``` 
 
 ## Copy the example Rack attack config
@@ -322,7 +340,7 @@ sudo -u git -H cp config/resque.yml.example config/resque.yml
 
 ## Change the Redis socket path if you are not using the default Debian configuration
 ``` 
-sudo -u git -H editor config/resque.yml
+sudo -u git vi config/resque.yml
 ``` 
 
 ## Configure GitLab database settings by copying the template for Postgresql to database.yml
@@ -332,7 +350,7 @@ sudo -u git cp config/database.yml.postgresql config/database.yml
 
 ## Now update the config/database.yml
 ``` 
-sudo -u git -H editor config/database.yml
+sudo -u git vi config/database.yml
 ``` 
 
 ## The minimal lines to change are
@@ -376,7 +394,7 @@ sudo chown git /home/git/gitlab/tmp/sockets/private
 ## If you are using non-default settings you need to update config.toml
 ``` 
 cd /home/git/gitaly
-sudo -u git -H editor config.toml
+sudo -u git vi config.toml
 ``` 
 
 ## start Gitaly
@@ -444,14 +462,6 @@ or
 sudo /etc/init.d/gitlab restart
 ``` 
 
-## Install the NGINX repo's
-```  
-cd /tmp/ && wget http://nginx.org/keys/nginx_signing.key 
-sudo apt-key add nginx_signing.key 
-sudo bash -c 'echo "deb http://nginx.org/packages/mainline/debian/ stretch nginx" > /etc/apt/sources.list.d/nginx.list' 
-apt-get update
-``` 
-
 ## Install NGINX
 ``` 
 sudo apt-get install -y nginx
@@ -464,12 +474,14 @@ sudo cp lib/support/nginx/gitlab /etc/nginx/conf.d/gitlab.conf
 
 ## Edit the config file
 ``` 
-sudo editor /etc/nginx/sites-available/gitlab
+sudo vi /etc/nginx/sites-available/gitlab
 ``` 
 
 ## Delete the default nginx config file
 ``` 
-rm -f /etc/nginx/conf.d/default*
+sudo rm -f /etc/nginx/conf.d/default* 
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo rm -f /etc/nginx/sites-available/default 
 ``` 
 
 # Restart NGINX to activate the configuration:

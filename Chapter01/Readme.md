@@ -1,6 +1,10 @@
 # Files in this directory:
 Readme.md - this file
+InstallingRedis.md - instructions how to install Redis
 nginx.config - a sample configuration file for NGINX
+
+# Chapter 1, Introducing the GitLab Architecture
+This chapter  provides a short introduction to the company and the people that created the product, along with a high-level overview of GitLab and its components.
 
 # Commands used in Chapter 1
 
@@ -10,12 +14,12 @@ sudo apt-get update
 sudo apt-get install nginx
 ``` 
 
-# Using Homebrew on macOS
+# Using Homebrew on macOS to install NGINX
 ``` 
 brew install nginx
 ``` 
 
-# Run nginx config
+# Run a specific NGINX configuration
 ``` 
 nginx -c /path/to/nginx.config
 ``` 
@@ -27,7 +31,7 @@ gem install rails
 gem install unicorn
 ``` 
 
-# Install new rails app
+# Install a new rails app
 ``` 
 mkdir /usr/local/www
 chmod 755 /usr/local/www
@@ -35,7 +39,7 @@ cd /usr/local/www
 rails new gitlab-app
 ``` 
 
-# Download a unicorn default config
+# Download a unicorn default configuration
 ``` 
 cd gitlab-app/config
 wget https://raw.github.com/defunkt/unicorn/master/examples/unicorn.conf.rb
@@ -56,7 +60,7 @@ unicorn -c config/unicorn.rb
 ruby unicorn_status.rb /var/opt/gitlab/gitlab-rails/sockets/gitlab.socket 10
 ``` 
 
-# Install Redis on macOS
+# Install Redis on macOS with homebrew
 ``` 
 brew install redis
 ``` 
@@ -70,7 +74,7 @@ or
 yum install redis
 ``` 
 
-## Install from source
+## Install Redis from source
 ``` 
 curl http://download.redis.io/redis-stable.tar.gz | tar xvz
 cd redis-stable
