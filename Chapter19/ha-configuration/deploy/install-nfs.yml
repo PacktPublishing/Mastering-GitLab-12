@@ -11,6 +11,11 @@
       ftp_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
   environment: "{{ proxy_env }} "
   tasks :
+    - name: Modify /etc/environment
+      lineinfile:
+        path: /etc/environment
+        line: LC_ALL="en_US.UTF-8"
+
     # - name: Install Aptitude
     #   apt:
     #     name: aptitude
@@ -23,13 +28,13 @@
     #   register: task_result
 
     - name: Install nfs common packages
-      apt: name=nfs-common state=installed update_cache=yes
+      apt: name=nfs-common state=present update_cache=yes
 
     - name: temp fix for nfs starting order of services
       shell: "systemctl add-wants multi-user.target rpcbind.service"
 
     - name: Install nfs server packages
-      apt: name=nfs-kernel-server state=installed update_cache=yes
+      apt: name=nfs-kernel-server state=present update_cache=yes
 
     # - name: (reboot) Reboot triggered
     #   command: /sbin/shutdown -r +1 "Ansible-triggered Reboot"

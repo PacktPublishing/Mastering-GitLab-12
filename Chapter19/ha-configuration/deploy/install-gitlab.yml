@@ -2,7 +2,6 @@
 - name : Configure front end application servers
   hosts: frontend
   become: yes
-  serial: 1
   become_user: root
   vars:
     proxy_env:
@@ -11,6 +10,11 @@
       ftp_proxy: http://{{ hostvars[inventory_hostname].proxy }}:3128
   environment: "{{ proxy_env }} "
   tasks :
+    - name: Modify /etc/environment
+      lineinfile:
+        path: /etc/environment
+        line: LC_ALL="en_US.UTF-8"
+
     # - name: Install Aptitude
     #   apt:
     #     update_cache: yes
@@ -23,7 +27,7 @@
     #   register: task_result
 
     # - name: Install list of packages
-    #   apt: name={{item}} state=installed
+    #   apt: name={{item}} state=present
     #   with_items:
     #     - curl
     #     - openssh-server
@@ -31,7 +35,7 @@
     #     - postfix
 
     - name: Install nfs common packages
-      apt: name=nfs-common state=installed update_cache=yes
+      apt: name=nfs-common state=present update_cache=yes
 
     # - name: (reboot) Reboot triggered
     #   command: /sbin/shutdown -r +1 "Ansible-triggered Reboot"
@@ -135,20 +139,24 @@
         mode: 0600
 
     - name: Install gitlab omnibus
-      apt: name={{item}} state=installed
+      apt: name={{item}} state=present
       with_items:
-        - gitlab-ee
+        - gitlab-ee=12.0.0-ee.0
       
     - name: Active changes
       shell: "gitlab-ctl reconfigure"
   
-    - name: Transfer generated secrets from first appserver
+    - name: Fetch generated secrets from first appserver
       fetch:
         src: /etc/gitlab/gitlab-secrets.json
         dest: /tmp/
         flat: yes
       when: hostvars[inventory_hostname].role == "master"
     
+    - name: Wait until the file /tmp/gitlab-secrets.json is present before continuing
+      wait_for:
+        path: /tmp/gitlab-secrets.json
+
     - name: Transfer generated secrets from first appserver
       copy:
         src: /tmp/gitlab-secrets.json
