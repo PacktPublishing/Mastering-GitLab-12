@@ -23,7 +23,7 @@ resource "ansible_host" "FRONTEND001" {
   groups = ["frontend"]
   vars = {
       ansible_user = "ubuntu"
-      role = "slave"
+      role = "master"
       ansible_ssh_private_key_file="/tmp/mykey.pem"
       ansible_python_interpreter="/usr/bin/python3"
       ansible_ssh_common_args= " -o ProxyCommand=\"ssh -o StrictHostKeyChecking=no -i /tmp/mykey.pem -W %h:%p -q ubuntu@${aws_instance.BASTIONHOST_A.public_dns}\""
@@ -37,7 +37,7 @@ resource "ansible_host" "FRONTEND002" {
   groups = ["frontend"]
   vars = {
       ansible_user = "ubuntu"
-      role = "master"
+      role = "slave"
       ansible_ssh_private_key_file="/tmp/mykey.pem"
       ansible_python_interpreter="/usr/bin/python3"
       ansible_ssh_common_args= " -o ProxyCommand=\"ssh -o StrictHostKeyChecking=no -i /tmp/mykey.pem -W %h:%p -q ubuntu@${aws_instance.BASTIONHOST_B.public_dns}\""
