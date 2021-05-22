@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/local/bin/bash 
 
 # Script to connect to one or all amazon ec2 hosts in this play
 # This only works on Mac currently!
@@ -73,6 +73,6 @@ case "$1" in
     "all") for host in "${!cluster_hosts[@]}"; do connect_to_host $host ${cluster_hosts[$host]} mac; done;;
     "linux-all") connect_to_host $host ${cluster_hosts[$host]} linux;;
     "show_host_codes") for host in "${!cluster_hosts[@]}"; do echo "hostcode: $host -- hostname: ${cluster_hosts[$host]}"; done;;
-    *) connect_to_host $1 ${cluster_hosts[$1]} mac;;
+    *) connect_to_host $1 ${cluster_hosts[$1]} linux;;
 
 esac
