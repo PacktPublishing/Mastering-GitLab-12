@@ -2,6 +2,7 @@
 - name : Configure front end application servers
   hosts: frontend
   become: yes
+  serial: 1
   become_user: root
   vars:
     proxy_env:
@@ -152,10 +153,6 @@
         dest: /tmp/
         flat: yes
       when: hostvars[inventory_hostname].role == "master"
-    
-    - name: Wait until the file /tmp/gitlab-secrets.json is present before continuing
-      wait_for:
-        path: /tmp/gitlab-secrets.json
 
     - name: Transfer generated secrets from first appserver
       copy:
