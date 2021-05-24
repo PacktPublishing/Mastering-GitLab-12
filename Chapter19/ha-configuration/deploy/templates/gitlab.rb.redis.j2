@@ -18,7 +18,7 @@ gitaly['enable'] = false
 roles ['redis_master_role']
 {% else %}
 roles ['redis_slave_role']
-redis['master_ip'] = '{{ hostvars[groups['redis'][1]]['ansible_eth0']['ipv4']['address'] }}'
+redis['master_ip'] = '{{ hostvars[groups['redis'][0]]['ansible_eth0']['ipv4']['address'] }}'
 {% endif %}   
  
 redis['bind'] = '0.0.0.0'

@@ -1,5 +1,4 @@
-resource "aws_security_group" "SG-loadbalancer"
-{
+resource "aws_security_group" "SG-loadbalancer" {
     name = "SG-loadbalancer"
     vpc_id = "${aws_vpc.gitlabha.id}"
     description = "Security group for the load-balancer"
@@ -32,13 +31,11 @@ resource "aws_security_group" "SG-loadbalancer"
         security_groups = ["${aws_security_group.SG-frontendservers.id}"]
     }
 
-    tags
-    {
+    tags = {
         Name = "SG-loadbalancers"
     }
 }
-resource "aws_security_group" "SG-frontendservers"
-{
+resource "aws_security_group" "SG-frontendservers" {
     name = "SG-frontendservers"
     vpc_id = "${aws_vpc.gitlabha.id}"
     description = "Security group for frontendservers"
@@ -81,8 +78,7 @@ resource "aws_security_group" "SG-frontendservers"
       protocol = "-1"
       description = "Allow all outgoing traffic"
     }
-    tags
-    {
+    tags = {
         Name = "SG-frontendservers"
     }
 }
@@ -95,7 +91,7 @@ resource "aws_security_group" "SG-bastionhosts" {
       from_port = 22
       to_port = 22
       protocol = "TCP"
-      cidr_blocks = ["${var.mgmt_ips}"]
+      cidr_blocks = "${var.mgmt_ips}"
       description = "Allow incoming SSH from management IPs"
   }
 
@@ -103,7 +99,7 @@ resource "aws_security_group" "SG-bastionhosts" {
       from_port = -1
       to_port = -1
       protocol = "ICMP"
-      cidr_blocks = ["${var.mgmt_ips}"]
+      cidr_blocks = "${var.mgmt_ips}"
       description = "Allow incoming ICMP from management IPs"
   }
   egress {
@@ -113,7 +109,7 @@ resource "aws_security_group" "SG-bastionhosts" {
       protocol = "-1"
       description = "Allow all outgoing traffic"
   }
-  tags {
+  tags = {
       Name = "SG-bastionhosts"
   }
 }
@@ -184,7 +180,7 @@ resource "aws_security_group" "SG-backendservers" {
         security_groups = ["${aws_security_group.SG-bastionhosts.id}"]
         description = "Allow incoming SSH traffic from bastion hosts"
     }
-    
+
     ingress {
         from_port = -1
         to_port = -1
@@ -199,15 +195,14 @@ resource "aws_security_group" "SG-backendservers" {
         protocol = -1
         self = true
     }
-    
+
     egress {
         from_port = 3128
         to_port = 3128
         protocol = "TCP"
         security_groups = ["${aws_security_group.SG-bastionhosts.id}"]
     }
-    tags
-    {
+    tags = {
         Name = "SG-backendservers"
     }
 }
