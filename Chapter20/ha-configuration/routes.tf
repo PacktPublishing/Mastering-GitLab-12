@@ -6,7 +6,7 @@ resource "aws_route_table" "eu-default" {
       gateway_id = "${aws_internet_gateway.inetgw.id}" # via IGW
   }
 
-  tags {
+  tags = {
       Name = "Route-Table-EU-Default"
   }
 }

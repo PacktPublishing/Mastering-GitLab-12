@@ -1,5 +1,4 @@
-resource "aws_security_group" "LoadBalancerSG"
-{
+resource "aws_security_group" "LoadBalancerSG" {
     name = "LoadBalancerSG"
     vpc_id = "${aws_vpc.gitlabha.id}"
     description = "Security group for load-balancers"
@@ -32,13 +31,11 @@ resource "aws_security_group" "LoadBalancerSG"
         security_groups = ["${aws_security_group.ApplicationSG.id}"]
     }
 
-    tags
-    {
+    tags= {
         Name = "SG-Loadbalancer"
     }
 }
-resource "aws_security_group" "ApplicationSG"
-{
+resource "aws_security_group" "ApplicationSG" {
     name = "ApplicationSG"
     vpc_id = "${aws_vpc.gitlabha.id}"
     description = "Security group for webservers"
@@ -81,8 +78,7 @@ resource "aws_security_group" "ApplicationSG"
       protocol = "-1"
       description = "Allow all outgoing traffic"
     }
-    tags
-    {
+    tags = {
         Name = "SG-WebServer"
     }
 }
@@ -95,7 +91,7 @@ resource "aws_security_group" "bastionhostSG" {
       from_port = 22
       to_port = 22
       protocol = "TCP"
-      cidr_blocks = ["${var.mgmt_ips}"]
+      cidr_blocks = "${var.mgmt_ips}"
       description = "Allow incoming SSH from management IPs"
   }
 
@@ -103,7 +99,7 @@ resource "aws_security_group" "bastionhostSG" {
       from_port = -1
       to_port = -1
       protocol = "ICMP"
-      cidr_blocks = ["${var.mgmt_ips}"]
+      cidr_blocks = "${var.mgmt_ips}"
       description = "Allow incoming ICMP from management IPs"
   }
   egress {
@@ -113,7 +109,7 @@ resource "aws_security_group" "bastionhostSG" {
       protocol = "-1"
       description = "Allow all outgoing traffic"
   }
-  tags {
+  tags = {
       Name = "SG-Bastionhost"
   }
 }
@@ -214,8 +210,7 @@ resource "aws_security_group" "DBServerSG" {
         protocol = "TCP"
         security_groups = ["${aws_security_group.bastionhostSG.id}"]
     }
-    tags
-    {
+    tags = {
         Name = "SG-DBServer"
     }
 }

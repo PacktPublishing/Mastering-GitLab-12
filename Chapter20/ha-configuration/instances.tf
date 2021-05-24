@@ -1,7 +1,7 @@
 resource "aws_instance" "FRONTENDA" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.medium"
-    tags {
+    tags = {
         Name = "${var.environment}-FRONTEND001"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -13,7 +13,7 @@ resource "aws_instance" "FRONTENDA" {
 resource "aws_instance" "FRONTENDB" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.medium"
-    tags {
+    tags = {
         Name = "${var.environment}-FRONTEND002"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -26,7 +26,7 @@ resource "aws_instance" "FRONTENDB" {
 resource "aws_instance" "BACKENDA" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.medium"
-    tags {
+    tags = {
         Name = "${var.environment}-BACKEND001"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -38,7 +38,7 @@ resource "aws_instance" "BACKENDA" {
 resource "aws_instance" "BACKENDB" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.medium"
-    tags {
+    tags = {
         Name = "${var.environment}-BACKEND002"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -51,7 +51,7 @@ resource "aws_instance" "BACKENDB" {
 resource "aws_instance" "BASTIONHOSTA" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.micro"
-    tags {
+    tags = {
         Name = "${var.environment}-BASTION001"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -64,7 +64,7 @@ resource "aws_instance" "BASTIONHOSTA" {
 resource "aws_instance" "BASTIONHOSTB" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.micro"
-    tags {
+    tags = {
         Name = "${var.environment}-BASTION002"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -77,7 +77,7 @@ resource "aws_instance" "BASTIONHOSTB" {
 resource "aws_instance" "SQLA" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.large"
-    tags {
+    tags = {
         Name = "${var.environment}-SQL001"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -90,7 +90,7 @@ resource "aws_instance" "SQLA" {
 resource "aws_instance" "SQLB" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.large"
-    tags {
+    tags = {
         Name = "${var.environment}-SQL002"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -103,7 +103,7 @@ resource "aws_instance" "SQLB" {
 resource "aws_instance" "SQLC" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.large"
-    tags {
+    tags = {
         Name = "${var.environment}-SQL003"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -117,7 +117,7 @@ resource "aws_instance" "SQLC" {
 resource "aws_instance" "REDISA" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.micro"
-    tags {
+    tags = {
         Name = "${var.environment}-REDIS001"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -130,7 +130,7 @@ resource "aws_instance" "REDISA" {
 resource "aws_instance" "REDISB" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.micro"
-    tags {
+    tags = {
         Name = "${var.environment}-REDIS002"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -144,7 +144,7 @@ resource "aws_instance" "REDISB" {
 resource "aws_instance" "CONSULA" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.micro"
-    tags {
+    tags = {
         Name = "${var.environment}-CONSUL001"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -157,7 +157,7 @@ resource "aws_instance" "CONSULA" {
 resource "aws_instance" "CONSULB" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.micro"
-    tags {
+    tags = {
         Name = "${var.environment}-CONSUL002"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -170,7 +170,7 @@ resource "aws_instance" "CONSULB" {
 resource "aws_instance" "CONSULC" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.micro"
-    tags {
+    tags = {
         Name = "${var.environment}-CONSUL003"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -183,7 +183,7 @@ resource "aws_instance" "CONSULC" {
 resource "aws_instance" "PGBOUNCERA" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.micro"
-    tags {
+    tags = {
         Name = "${var.environment}-PGBOUNCER001"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
@@ -196,7 +196,7 @@ resource "aws_instance" "PGBOUNCERA" {
 resource "aws_instance" "GITALYA" {
     ami = "${lookup(var.aws_ubuntu_awis,var.region)}"
     instance_type = "t2.medium"
-    tags {
+    tags = {
         Name = "${var.environment}-GITALY001"
         Environment = "${var.environment}"
         sshUser = "ubuntu"
