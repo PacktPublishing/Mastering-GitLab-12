@@ -1,9 +1,10 @@
 # Basic Horizontal Scaling for GitLab with Amazon, Terraform and Ansible
 
 ## Requirements
-* terraform >= v0.11.12
- * provider.aws v2.1.0
+* terraform >= v0.12
+ * provider.aws v3.42.0
  * provider.tls v1.2.0
+ * provider.ansible  v1.0.4
 * ansible >= 2.7.10 
 * jq >= 1.6
 
