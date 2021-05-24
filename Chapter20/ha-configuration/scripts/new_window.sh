@@ -1,11 +1,9 @@
-#!/bin/bash -x
 function new_window {
     TMP_FILE=$(mktemp "/tmp/command.XXXXXX")
     echo "#!/usr/bin/env bash" > $TMP_FILE
 
     # Copy over environment (including functions), but filter out readonly stuff
-    #::w
-    #set | grep -v "\(BASH_VERSINFO\|EUID\|PPID\|SHELLOPTS\|BASHOPTS\|UID\)" >> $TMP_FILE
+    set | grep -v "\(BASH_VERSINFO\|EUID\|PPID\|SHELLOPTS\|UID\)" >> $TMP_FILE
 
     # Copy over exported envrionment
     export -p >> $TMP_FILE
@@ -19,6 +17,6 @@ function new_window {
     chmod +x "$TMP_FILE"
     open -b com.apple.terminal "$TMP_FILE"
 
-    sleep 10     #Wait for terminal to start
-    #rm "$TMP_FILE"
+    sleep .1 # Wait for terminal to start
+#    rm "$TMP_FILE"
 }

@@ -25,7 +25,7 @@ gitaly['enable'] = false
 
  # Redis connection details
  gitlab_rails['redis_port'] = '6379'
- gitlab_rails['redis_host'] = '{{ hostvars[groups['redis'][1]]['inventory_hostname'] }}' # IP/hostname of Redis server
+ gitlab_rails['redis_host'] = '{{ hostvars[groups['redis'][0]]['inventory_hostname'] }}' # IP/hostname of Redis server
  gitlab_rails['redis_password'] = 'packtpub'
 
 # Ensure UIDs and GIDs match between servers for permissions via shared filesystem

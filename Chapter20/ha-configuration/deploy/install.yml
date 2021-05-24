@@ -4,29 +4,29 @@
   become: yes
   become_user: root
   tasks :
-    - name: Install Aptitude
-      apt:
-        update_cache: yes
-        name: aptitude
+    # - name: Install Aptitude
+    #   apt:
+    #     update_cache: yes
+    #     name: aptitude
 
-    - name: Full update Ubuntu
-      apt:
-        update_cache: yes
-        upgrade: full
-      register: task_result
+    # - name: Full update Ubuntu
+    #   apt:
+    #     update_cache: yes
+    #     upgrade: full
+    #   register: task_result
 
-    - name: (reboot) Reboot triggered
-      command: /sbin/shutdown -r +1 "Ansible-triggered Reboot"
-      async: 0
-      poll: 0
-      when: task_result is changed
+    # - name: (reboot) Reboot triggered
+    #   command: /sbin/shutdown -r +1 "Ansible-triggered Reboot"
+    #   async: 0
+    #   poll: 0
+    #   when: task_result is changed
  
-    - name: Wait for the reboot to complete if there was a change.
-      wait_for_connection:
-        connect_timeout: 30
-        sleep: 60
-        delay: 120
-      when: task_result is changed
+    # - name: Wait for the reboot to complete if there was a change.
+    #   wait_for_connection:
+    #     connect_timeout: 30
+    #     sleep: 60
+    #     delay: 120
+    #   when: task_result is changed
       
     - name: Install Squid
       apt:

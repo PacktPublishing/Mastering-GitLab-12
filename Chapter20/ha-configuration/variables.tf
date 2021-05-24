@@ -1,27 +1,25 @@
-variable "region"
-{
+variable "region" {
     default = "eu-west-1"
 }
 
-variable "aws_ubuntu_awis"
-{
+variable "aws_ubuntu_awis" {
     default = {
         "eu-west-1" = "ami-2a7d75c0"
     }
 }
 
 variable "environment"{
-    type = "string"
+    type = string
     default = "dev"
 }
 
 variable "application" {
-    type = "string"
+    type = string
     default = "gitlab"
 }
 
 variable "key_name" {
-    type = "string"
+    type = string
     default = "ec2key"
 }
 
