@@ -18,7 +18,8 @@ pgbouncer['admin_users'] = %w(pgbouncer gitlab-consul)
 # Configure Consul agent
 consul['watchers'] = %w(postgresql)
 
-# Setup application passwords
+# Setup application passwords 
+# pgbouncer cleartext: packtpub
 pgbouncer['users'] = {
   'gitlab-consul': {
     password: '46ae9788c600a7d8483796466f64033a'
