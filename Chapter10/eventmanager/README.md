@@ -1,5 +1,9 @@
 # Eventmanager app
 
+# Install dependencies
+```
+bundle install
+```
 
 # Generate UID's in attendees.yml, the invitee db
 ```
