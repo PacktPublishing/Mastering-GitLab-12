@@ -44,7 +44,7 @@ GEM
       timeout
     net-smtp (0.5.2)
       net-protocol
-    rack (3.2.7)
+    rack (3.2.8)
     rack-protection (4.2.1)
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
@@ -89,7 +89,7 @@ DEPENDENCIES
   concurrent-ruby (~> 1.3.7)
   mail (~> 2.9.1)
   net
-  rack (~> 3.2.7)
+  rack (~> 3.2.8)
   rack-test
   rspec
   safe_yaml
